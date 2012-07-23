@@ -2,13 +2,20 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <windows.h>
-#include <crtdbg.h>
+#if defined(WIN32)
+	#include <io.h>
+	#include <windows.h>
+	#include <crtdbg.h>
+#else
+	#define __STDC_FORMAT_MACROS
+	#include <inttypes.h>
+	#include <unistd.h>
+	#include <sys/time.h>
+#endif
 
 #include "arib_std_b25.h"
 #include "b_cas_card.h"
@@ -31,6 +38,7 @@ int main(int argc, char **argv)
 	int n;
 	OPTION opt;
 	
+	#if defined(WIN32)
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
@@ -38,6 +46,7 @@ int main(int argc, char **argv)
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
 	_CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF|_CRTDBG_DELAY_FREE_MEM_DF|_CRTDBG_CHECK_ALWAYS_DF|_CRTDBG_LEAK_CHECK_DF);
+	#endif
 
 	n = parse_arg(&opt, argc, argv);
 	if(n+2 > argc){
@@ -49,7 +58,9 @@ int main(int argc, char **argv)
 		test_arib_std_b25(argv[n+0], argv[n+1], &opt);
 	}
 	
+	#if defined(WIN32)
 	_CrtDumpMemoryLeaks();
+	#endif
 
 	return EXIT_SUCCESS;
 }
@@ -146,8 +157,12 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 
 	int64_t total;
 	int64_t offset;
-
+#if defined(WIN32)
 	unsigned long tick,tock;
+#else
+	struct timeval tick,tock;
+	double millisec;
+#endif
 	double mbps;
 
 	ARIB_STD_B25 *b25;
@@ -224,7 +239,11 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 	}
 
 	offset = 0;
+#if defined(WIN32)
 	tock = GetTickCount();
+#else
+	gettimeofday(&tock, NULL);
+#endif
 	while( (n = _read(sfd, data, sizeof(data))) > 0 ){
 		sbuf.data = data;
 		sbuf.size = n;
@@ -252,13 +271,24 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 		offset += sbuf.size;
 		if(opt->verbose != 0){
 			m = (int)(10000*offset/total);
-			tick = GetTickCount();
 			mbps = 0.0;
+#if defined(WIN32)
+			tick = GetTickCount();
 			if (tick-tock > 100) {
 				mbps = offset;
 				mbps /= 1024;
 				mbps /= (tick-tock);
 			}
+#else
+			gettimeofday(&tick, NULL);
+			millisec = (tick.tv_sec - tock.tv_sec) * 1000;
+			millisec += (tick.tv_usec - tock.tv_usec) / 1000;
+			if(millisec > 100.0) {
+				mbps = offset;
+				mbps /= 1024;
+				mbps /= millisec;
+			}
+#endif
 			fprintf(stderr, "\rprocessing: %2d.%02d%% [%6.2f MB/sec]", m/100, m%100, mbps);
 		}
 	}
@@ -285,11 +315,23 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 
 	if(opt->verbose != 0){
 		mbps = 0.0;
+#if defined(WIN32)
+		tick = GetTickCount();
 		if (tick-tock > 100) {
 			mbps = offset;
 			mbps /= 1024;
 			mbps /= (tick-tock);
 		}
+#else
+		gettimeofday(&tick, NULL);
+		millisec = (tick.tv_sec - tock.tv_sec) * 1000;
+		millisec += (tick.tv_usec - tock.tv_usec) / 1000;
+		if(millisec > 100.0) {
+			mbps = offset;
+			mbps /= 1024;
+			mbps /= millisec;
+		}
+#endif
 		fprintf(stderr, "\rprocessing: finish  [%6.2f MB/sec]\n", mbps);
 		fflush(stderr);
 		fflush(stdout);
@@ -311,8 +353,13 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 			fprintf(stderr, "  channel:               %d\n", pgrm.program_number);
 			fprintf(stderr, "  unpurchased ECM count: %d\n", pgrm.ecm_unpurchased_count);
 			fprintf(stderr, "  last ECM error code:   %04x\n", pgrm.last_ecm_error_code);
+			#if defined(WIN32)
 			fprintf(stderr, "  undecrypted TS packet: %d\n", pgrm.undecrypted_packet_count);
 			fprintf(stderr, "  total TS packet:       %d\n", pgrm.total_packet_count);
+			#else
+			fprintf(stderr, "  undecrypted TS packet: %"PRId64"\n", pgrm.undecrypted_packet_count);
+			fprintf(stderr, "  total TS packet:       %"PRId64"\n", pgrm.total_packet_count);
+			#endif
 		}
 	}
 

@@ -6,7 +6,9 @@
 
 #include <math.h>
 
-#include <windows.h>
+#if defined(WIN32)
+	#include <windows.h>
+#endif
 #include <winscard.h>
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
