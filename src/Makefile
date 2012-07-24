@@ -13,7 +13,9 @@ PCSC_LDLIBS ?= `pkg-config libpcsclite --libs`
 CC     = gcc
 CXX    = g++
 CFLAGS = -O2 -g -Wall $(PCSC_CFLAGS) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+
 LIBS   = $(PCSC_LDLIBS) -lm
+LDFLAGS = 
 
 OBJS  = arib_std_b25.o b_cas_card.o multi2.o ts_section_parser.o
 HEADERS = arib_std_b25.h b_cas_card.h portable.h
@@ -29,13 +31,13 @@ clean:
 	rm -f $(OBJS) td.o $(TARGETS) $(DEPEND)
 
 $(TARGET_APP): $(OBJS) td.o
-	$(CXX) $(CFLAGS) -o $(TARGET_APP) $(OBJS) td.o $(LIBS)
+	$(CXX) $(LDFLAGS) -o $(TARGET_APP) $(OBJS) td.o $(LIBS)
 
 $(TARGET_LIB): $(OBJS)
-	$(CXX) $(CFLAGS) -shared -o $(TARGET_LIB) $(OBJS) $(LIBS) -Wl,-soname,$(SONAME)
+	$(CXX) $(LDFLAGS) -shared -o $(TARGET_LIB) $(OBJS) $(LIBS) -Wl,-soname,$(SONAME)
 
 $(DEPEND):
-	$(CC) -MM $(OBJS:.o=.c) td.c $(CFLAGS) > $@
+	$(CC) -MM $(OBJS:.o=.c) td.c > $@
 
 install: $(TARGET) install-headers
 	install -m755 b25 $(PREFIX)/bin
