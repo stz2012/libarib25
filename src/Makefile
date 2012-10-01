@@ -37,7 +37,7 @@ $(TARGET_LIB): $(OBJS)
 	$(CXX) $(LDFLAGS) -shared -o $(TARGET_LIB) $(OBJS) $(LIBS) -Wl,-soname,$(SONAME)
 
 $(DEPEND):
-	$(CC) -MM $(OBJS:.o=.c) td.c > $@
+	$(CC) -fPIC -MM $(OBJS:.o=.c) td.c > $@
 
 install: $(TARGET) install-headers
 	install -m755 b25 $(PREFIX)/bin
