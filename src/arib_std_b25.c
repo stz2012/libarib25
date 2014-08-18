@@ -8,6 +8,8 @@
 #include "ts_common_types.h"
 #include "ts_section_parser.h"
 
+//#define DEBUG 1
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  inner structures
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -1789,6 +1791,7 @@ LAST:
 	return r;
 }
 
+#ifdef DEBUG
 static void dump_pts(uint8_t *src, int32_t crypt)
 {
 	int32_t pts_dts_flag;
@@ -1824,6 +1827,7 @@ static void dump_pts(uint8_t *src, int32_t crypt)
 		fflush(stdout);
 	}
 }
+#endif
 
 static int proc_arib_std_b25(ARIB_STD_B25_PRIVATE_DATA *prv)
 {
@@ -1919,7 +1923,7 @@ static int proc_arib_std_b25(ARIB_STD_B25_PRIVATE_DATA *prv)
 		}else{
 			prv->map[pid].normal_packet += 1;
 		}
-#if 0
+#ifdef DEBUG
 		if( (hdr.payload_unit_start_indicator != 0) && (pid == 0x111) ){
 			dump_pts(curr, crypt);
 		}
