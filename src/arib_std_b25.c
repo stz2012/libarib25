@@ -1811,7 +1811,7 @@ LAST:
 static void dump_pts(uint8_t *src, int32_t crypt)
 {
 	int32_t pts_dts_flag;
-	int64_t pts,dts;
+	int64_t pts=0,dts;
 	
 	src += 4; // TS ヘッダ部
 	src += 4; // start_code_prefix + stream_id 部
