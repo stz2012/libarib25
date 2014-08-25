@@ -49,6 +49,8 @@ typedef struct {
 
 } ARIB_STD_B25;
 
+#define ARIB_STD_B25_TS_PROBING_MIN_DATA (320 * 9 - 1)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
