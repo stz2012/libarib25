@@ -14,6 +14,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 LT_INIT
 
+AC_DEFINE([WIN32_LEAN_AND_MEAN],, [Define to limit the scope of <windows.h>.])
+
 # Checks for libraries.
 PKG_CHECK_MODULES(pcsclite, "libpcsclite", [
   AC_DEFINE(HAVE_PCSC, 1, "have libpcsclite")
