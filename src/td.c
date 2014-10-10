@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	int n;
 	OPTION opt;
 	
-	#if defined(WIN32)
+	#if defined(WIN32) && defined(_MSC_VER)
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		test_arib_std_b25(argv[n+0], argv[n+1], &opt);
 	}
 	
-	#if defined(WIN32)
+	#if defined(WIN32) && defined(_MSC_VER)
 	_CrtDumpMemoryLeaks();
 	#endif
 
