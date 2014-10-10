@@ -354,8 +354,8 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 			fprintf(stderr, "  unpurchased ECM count: %d\n", pgrm.ecm_unpurchased_count);
 			fprintf(stderr, "  last ECM error code:   %04x\n", pgrm.last_ecm_error_code);
 			#if defined(WIN32)
-			fprintf(stderr, "  undecrypted TS packet: %d\n", pgrm.undecrypted_packet_count);
-			fprintf(stderr, "  total TS packet:       %d\n", pgrm.total_packet_count);
+			fprintf(stderr, "  undecrypted TS packet: %I64d\n", pgrm.undecrypted_packet_count);
+			fprintf(stderr, "  total TS packet:       %I64d\n", pgrm.total_packet_count);
 			#else
 			fprintf(stderr, "  undecrypted TS packet: %"PRId64"\n", pgrm.undecrypted_packet_count);
 			fprintf(stderr, "  total TS packet:       %"PRId64"\n", pgrm.total_packet_count);
