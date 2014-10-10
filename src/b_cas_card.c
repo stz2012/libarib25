@@ -2,13 +2,11 @@
 #include "b_cas_card_error_code.h"
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <math.h>
 
-#if defined(WIN32)
-	#include <windows.h>
-#endif
 #include <winscard.h>
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
