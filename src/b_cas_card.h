@@ -1,6 +1,7 @@
 #ifndef B_CAS_CARD_H
 #define B_CAS_CARD_H
 
+#include "arib25api.h"
 #include "portable.h"
 
 typedef struct {
@@ -66,7 +67,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern B_CAS_CARD *create_b_cas_card();
+ARIB25API B_CAS_CARD *create_b_cas_card();
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 #ifndef MULTI2_H
 #define MULTI2_H
 
+#include "arib25api.h"
 #include "portable.h"
 
 typedef struct {
@@ -26,7 +27,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern MULTI2 *create_multi2();
+ARIB25API MULTI2 *create_multi2();
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 #ifndef ARIB_STD_B25_H
 #define ARIB_STD_B25_H
 
+#include "arib25api.h"
 #include "portable.h"
 #include "b_cas_card.h"
 
@@ -34,6 +35,8 @@ typedef struct {
 	int (* set_emm_proc)(void *std_b25, int32_t on);
 	
 	int (* set_b_cas_card)(void *std_b25, B_CAS_CARD *bcas);
+
+	int (* set_unit_size)(void *std_b25, int size);
 	
 	int (* reset)(void *std_b25);
 	int (* flush)(void *std_b25);
@@ -46,11 +49,13 @@ typedef struct {
 
 } ARIB_STD_B25;
 
+#define ARIB_STD_B25_TS_PROBING_MIN_DATA (320 * 9 - 1)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern ARIB_STD_B25 *create_arib_std_b25();
+ARIB25API ARIB_STD_B25 *create_arib_std_b25();
 
 #ifdef __cplusplus
 }

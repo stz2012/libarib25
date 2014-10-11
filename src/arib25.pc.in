@@ -1,0 +1,17 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+datarootdir=@datarootdir@
+libdir=@libdir@
+datadir=@datadir@
+pkgincludedir=@includedir@/@PACKAGE@
+pkgdatadir=${datadir}/@PACKAGE@
+pkglibdir=${libdir}/@PACKAGE@
+pluginsdir=${pkglibdir}/plugins
+
+Name: ARIB B25 Library
+Description: ARIB STD B25
+Version: @VERSION@
+Cflags: -I${includedir}
+Requires.private: libpcsclite
+Libs: -L${libdir} -larib25 -lpcsclite

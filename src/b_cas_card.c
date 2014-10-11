@@ -2,13 +2,11 @@
 #include "b_cas_card_error_code.h"
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <math.h>
 
-#if defined(WIN32)
-	#include <windows.h>
-#endif
 #include <winscard.h>
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -265,14 +263,14 @@ static int get_id_b_cas_card(void *bcas, B_CAS_ID *dst)
 		}
 		
 		{
-			int maker_id;
-			int version;
-			int check_code;
+			//int maker_id;
+			//int version;
+			//int check_code;
 			
-			maker_id = p[0];
-			version = p[1];
+			//maker_id = p[0];
+			//version = p[1];
 			prv->id.data[i] = load_be_uint48(p+2);
-			check_code = load_be_uint16(p+8);
+			//check_code = load_be_uint16(p+8);
 		}
 		
 		p += 10;

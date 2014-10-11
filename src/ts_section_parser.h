@@ -1,6 +1,7 @@
 #ifndef TS_SECTION_PARSER_H
 #define TS_SECTION_PARSER_H
 
+#include "arib25api.h"
 #include "ts_common_types.h"
 
 typedef struct {
@@ -31,7 +32,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern TS_SECTION_PARSER *create_ts_section_parser();
+ARIB25API TS_SECTION_PARSER *create_ts_section_parser();
 
 #ifdef __cplusplus
 }
