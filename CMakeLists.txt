@@ -15,6 +15,9 @@ set(ARIB25_CMD_NAME "b25")
 
 set(ARIB25_URL "https://github.com/stz2012/libarib25")
 set(ARIB25_DESCRIPTION "Reference implementation of ARIB STD-B25")
+set(ARIB25_COMPANY "㋲製作所")
+set(ARIB25_COPYRIGHT "©2012 茂木 和洋")
+set(ARIB25_PRODUCT "ARIB STD-B25")
 
 set(ARIB25_MAJOR_VERSION "0")
 set(ARIB25_MINOR_VERSION "2")
@@ -29,6 +32,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "(GNU|CLang)")
 
 	if(UNIX AND NOT CYGWIN)
 		set(CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -eshow_version")
 	endif()
 elseif(CMAKE_C_COMPILER_ID MATCHES "(MSVC)")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
@@ -37,6 +41,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "(MSVC)")
 	set(CMAKE_SUPPRESS_REGENERATION TRUE)
 endif()
 
+include(GitRevision)
 include(GenerateExportHeader)
 find_package(WINSCARD REQUIRED)
 
@@ -49,26 +54,29 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${WINSCARD_INCLUDE_DIRS})
 
 
-add_library(arib25-objlib OBJECT src/arib_std_b25.c src/b_cas_card.c src/multi2.c src/ts_section_parser.c)
+add_library(arib25-objlib OBJECT src/arib_std_b25.c src/b_cas_card.c src/multi2.c src/ts_section_parser.c src/version.c)
 set_target_properties(arib25-objlib PROPERTIES COMPILE_DEFINITIONS ARIB25_DLL)
 
 add_library(arib25-static STATIC $<TARGET_OBJECTS:arib25-objlib>)
 set_target_properties(arib25-static PROPERTIES OUTPUT_NAME ${ARIB25_LIB_NAME})
 target_link_libraries(arib25-static PRIVATE ${WINSCARD_LIBRARIES})
 
-add_library(arib25-shared SHARED $<TARGET_OBJECTS:arib25-objlib>)
+add_library(arib25-shared SHARED $<TARGET_OBJECTS:arib25-objlib> ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 set_target_properties(arib25-shared PROPERTIES DEFINE_SYMBOL ARIB25_DLL)
+set_target_properties(arib25-shared PROPERTIES COMPILE_DEFINITIONS ARIB25_DLL)
 set_target_properties(arib25-shared PROPERTIES OUTPUT_NAME ${ARIB25_LIB_NAME})
 set_target_properties(arib25-shared PROPERTIES SOVERSION ${ARIB25_MAJOR_VERSION})
 set_target_properties(arib25-shared PROPERTIES VERSION ${ARIB25_VERSION})
 target_link_libraries(arib25-shared PRIVATE ${WINSCARD_LIBRARIES})
 generate_export_header(arib25-shared BASE_NAME arib25_api EXPORT_FILE_NAME arib25_api.h) 
 
-add_executable(b25 src/td.c)
+add_executable(b25 src/td.c ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 set_target_properties(b25 PROPERTIES OUTPUT_NAME ${ARIB25_CMD_NAME})
 target_link_libraries(b25 PRIVATE ${WINSCARD_LIBRARIES})
 target_link_libraries(b25 PRIVATE arib25-shared)
 
+configure_file(src/config.h.in config.h @ONLY)
+configure_file(src/version.rc.in version.rc @ONLY)
 
 if(UNIX AND NOT CYGWIN)
 	configure_file(src/libarib25.pc.in ${CMAKE_SHARED_LIBRARY_PREFIX}${ARIB25_LIB_NAME}.pc @ONLY)

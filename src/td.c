@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <config.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -67,7 +68,8 @@ int main(int argc, char **argv)
 
 static void show_usage()
 {
-	fprintf(stderr, "b25 - ARIB STD-B25 test program ver. 0.2.5 (2012, 2/13)\n");
+	fprintf(stderr, "b25 - ARIB STD-B25 test program version %s (%s)\n", ARIB25_VERSION, BUILD_GIT_REVISION);
+	fprintf(stderr, "  built with %s %s on %s\n", BUILD_CC_NAME, BUILD_CC_VERSION, BUILD_OS_NAME);
 	fprintf(stderr, "usage: b25 [options] src.m2t dst.m2t [more pair ..]\n");
 	fprintf(stderr, "options:\n");
 	fprintf(stderr, "  -r round (integer, default=4)\n");
