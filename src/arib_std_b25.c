@@ -326,7 +326,7 @@ static int get_program_info_arib_std_b25(void *std_b25, ARIB_STD_B25_PROGRAM_INF
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  global function implementation
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-ARIB_STD_B25 *create_arib_std_b25()
+ARIB25_API_EXPORT ARIB_STD_B25 *create_arib_std_b25()
 {
 	int n;
 	

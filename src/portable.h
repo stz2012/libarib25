@@ -1,7 +1,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#if (defined(WIN32) && MSC_VER < 1300) 
+#if (defined(WIN32) && defined(_MSC_VER) && _MSC_VER < 1800) 
 
 typedef unsigned char     uint8_t;
 typedef   signed char      int8_t;
@@ -14,6 +14,7 @@ typedef   signed __int64  int64_t;
 
 #else
 
+#include <stdint.h>
 #include <inttypes.h>
 
 #endif

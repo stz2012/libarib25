@@ -74,7 +74,7 @@ static int proc_emm_b_cas_card(void *bcas, uint8_t *src, int len);
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  global function implementation
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-B_CAS_CARD *create_b_cas_card()
+ARIB25_API_EXPORT B_CAS_CARD *create_b_cas_card()
 {
 	int n;
 	

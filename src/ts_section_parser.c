@@ -53,7 +53,7 @@ static int get_stat_ts_section_parser(void *parser, TS_SECTION_PARSER_STAT *stat
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  global function implementation (factory method)
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-TS_SECTION_PARSER *create_ts_section_parser()
+ARIB25_API_EXPORT TS_SECTION_PARSER *create_ts_section_parser()
 {
 	TS_SECTION_PARSER *r;
 	TS_SECTION_PARSER_PRIVATE_DATA *prv;
