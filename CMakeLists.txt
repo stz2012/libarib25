@@ -40,6 +40,10 @@ endif()
 include(GenerateExportHeader)
 find_package(WINSCARD REQUIRED)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_definitions("-DDEBUG")
+endif()
+
 add_definitions("-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${WINSCARD_INCLUDE_DIRS})
