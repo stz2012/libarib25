@@ -77,7 +77,7 @@ static int decrypt_multi2(void *m2, int32_t type, uint8_t *buf, int32_t size);
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  global function implementation
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-MULTI2 *create_multi2()
+ARIB25_API_EXPORT MULTI2 *create_multi2()
 {
 	int n;
 	

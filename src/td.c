@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <config.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -67,7 +68,8 @@ int main(int argc, char **argv)
 
 static void show_usage()
 {
-	fprintf(stderr, "b25 - ARIB STD-B25 test program ver. 0.2.5 (2012, 2/13)\n");
+	fprintf(stderr, "b25 - ARIB STD-B25 test program version %s (%s)\n", ARIB25_VERSION, BUILD_GIT_REVISION);
+	fprintf(stderr, "  built with %s %s on %s\n", BUILD_CC_NAME, BUILD_CC_VERSION, BUILD_OS_NAME);
 	fprintf(stderr, "usage: b25 [options] src.m2t dst.m2t [more pair ..]\n");
 	fprintf(stderr, "options:\n");
 	fprintf(stderr, "  -r round (integer, default=4)\n");
@@ -354,8 +356,8 @@ static void test_arib_std_b25(const char *src, const char *dst, OPTION *opt)
 			fprintf(stderr, "  unpurchased ECM count: %d\n", pgrm.ecm_unpurchased_count);
 			fprintf(stderr, "  last ECM error code:   %04x\n", pgrm.last_ecm_error_code);
 			#if defined(WIN32)
-			fprintf(stderr, "  undecrypted TS packet: %d\n", pgrm.undecrypted_packet_count);
-			fprintf(stderr, "  total TS packet:       %d\n", pgrm.total_packet_count);
+			fprintf(stderr, "  undecrypted TS packet: %I64d\n", pgrm.undecrypted_packet_count);
+			fprintf(stderr, "  total TS packet:       %I64d\n", pgrm.total_packet_count);
 			#else
 			fprintf(stderr, "  undecrypted TS packet: %"PRId64"\n", pgrm.undecrypted_packet_count);
 			fprintf(stderr, "  total TS packet:       %"PRId64"\n", pgrm.total_packet_count);

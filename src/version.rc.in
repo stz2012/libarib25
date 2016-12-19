@@ -1,0 +1,44 @@
+#include <windows.h>
+#include <config.h>
+#pragma code_page(65001)
+
+VS_VERSION_INFO    VERSIONINFO
+FILEVERSION        @ARIB25_MAJOR_VERSION@,@ARIB25_MINOR_VERSION@,@ARIB25_PATCH_VERSION@,0
+PRODUCTVERSION     @ARIB25_MAJOR_VERSION@,@ARIB25_MINOR_VERSION@,@ARIB25_PATCH_VERSION@,0
+FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK
+#ifdef DEBUG
+  FILEFLAGS        VS_FF_DEBUG | VS_FF_PRERELEASE
+#else
+  FILEFLAGS        0
+#endif
+FILEOS             VOS_NT_WINDOWS32
+#ifdef ARIB25_DLL
+FILETYPE           VFT_DLL
+#else
+FILETYPE           VFT_APP
+#endif
+FILESUBTYPE        VFT2_UNKNOWN
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904b0"
+    BEGIN
+      VALUE "CompanyName",      "@ARIB25_COMPANY@"
+      VALUE "FileDescription",  "@ARIB25_PRODUCT@ built with @CMAKE_C_COMPILER_ID@ @CMAKE_C_COMPILER_VERSION@ on @CMAKE_SYSTEM@"
+      VALUE "FileVersion",      "@ARIB25_VERSION@"
+      VALUE "InternalName",     "@PROJECT_NAME@"
+      VALUE "LegalCopyright",   "@ARIB25_COPYRIGHT@"
+#if defined(ARIB25_DLL)
+      VALUE "OriginalFilename", "@CMAKE_SHARED_LIBRARY_PREFIX@@ARIB25_LIB_NAME@@CMAKE_SHARED_LIBRARY_SUFFIX@"
+#else
+      VALUE "OriginalFilename", "@ARIB25_CMD_NAME@@CMAKE_EXECUTABLE_SUFFIX@"
+#endif
+      VALUE "ProductName",      "@ARIB25_PRODUCT@"
+      VALUE "ProductVersion",   "@ARIB25_VERSION@ (" BUILD_GIT_REVISION ")"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1200
+  END
+END

@@ -326,7 +326,7 @@ static int get_program_info_arib_std_b25(void *std_b25, ARIB_STD_B25_PROGRAM_INF
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  global function implementation
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-ARIB_STD_B25 *create_arib_std_b25()
+ARIB25_API_EXPORT ARIB_STD_B25 *create_arib_std_b25()
 {
 	int n;
 	
@@ -1765,21 +1765,21 @@ static int proc_ecm(DECRYPTOR_ELEM *dec, B_CAS_CARD *bcas, int32_t multi2_round)
 
 	dec->m2->set_scramble_key(dec->m2, res.scramble_key);
 
-	if (0) {
-		int i;
-		fprintf(stdout, "----\n");
-		fprintf(stdout, "odd: ");
-		for(i=0;i<8;i++){
-			fprintf(stdout, " %02x", res.scramble_key[i]);
-		}
-		fprintf(stdout, "\n");
-		fprintf(stdout, "even:");
-		for(i=8;i<16;i++){
-			fprintf(stdout, " %02x", res.scramble_key[i]);
-		}
-		fprintf(stdout, "\n");
-		fflush(stdout);
+#if defined(DEBUG)
+	int i;
+	fprintf(stderr, "----\n");
+	fprintf(stderr, "odd: ");
+	for(i=0;i<8;i++){
+		fprintf(stderr, " %02x", res.scramble_key[i]);
 	}
+	fprintf(stderr, "\n");
+	fprintf(stderr, "even:");
+	for(i=8;i<16;i++){
+		fprintf(stderr, " %02x", res.scramble_key[i]);
+	}
+	fprintf(stderr, "\n");
+	fflush(stderr);
+#endif
 	
 LAST:
 	if(sect.raw != NULL){
@@ -1792,7 +1792,7 @@ LAST:
 	return r;
 }
 
-#if 0
+#if defined(DEBUG)
 static void dump_pts(uint8_t *src, int32_t crypt)
 {
 	int32_t pts_dts_flag;
@@ -1824,8 +1824,8 @@ static void dump_pts(uint8_t *src, int32_t crypt)
 	}
 
 	if(pts_dts_flag == 2){
-		fprintf(stdout, "  key=%d, pts=%"PRId64"\n", crypt, pts/90);
-		fflush(stdout);
+		fprintf(stderr, "  key=%d, pts=%"PRId64"\n", crypt, pts/90);
+		fflush(stderr);
 	}
 }
 #endif
@@ -1924,7 +1924,7 @@ static int proc_arib_std_b25(ARIB_STD_B25_PRIVATE_DATA *prv)
 		}else{
 			prv->map[pid].normal_packet += 1;
 		}
-#if 0
+#if defined(DEBUG)
 		if( (hdr.payload_unit_start_indicator != 0) && (pid == 0x111) ){
 			dump_pts(curr, crypt);
 		}
