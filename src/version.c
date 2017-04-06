@@ -4,10 +4,8 @@
 #if defined(__GNUC__) || defined(__clang__)
 #  if defined(__x86_64__)
 const char elf_interp[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
-#  elif defined(__i386__)
-const char elf_interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
 #  else
-#    error architecture not supported!
+const char elf_interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
 #  endif
 #include <unistd.h>
 
