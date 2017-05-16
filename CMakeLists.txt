@@ -4,8 +4,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limit build types" FORCE)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
-set(CMAKE_BUILD_WITH_INSTALL_RPATH True)
 set(CMAKE_LEGACY_CYGWIN_WIN32 False)
+
+if (UNIX AND NOT CYGWIN)
+	set(CMD_LDCONFIG "ldconfig" CACHE STRING "ldconfig command")
+endif()
 
 project(arib_std_b25 C)
 enable_language(CXX)
@@ -86,6 +89,7 @@ if(UNIX AND NOT CYGWIN)
 	install(TARGETS arib25-static arib25-shared ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 	install(FILES src/arib_std_b25.h src/b_cas_card.h src/multi2.h src/ts_section_parser.h src/portable.h ${CMAKE_CURRENT_BINARY_DIR}/arib25_api.h DESTINATION include/arib25)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${ARIB25_LIB_NAME}.pc DESTINATION lib/pkgconfig)
+	install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DCMD_LDCONFIG=${CMD_LDCONFIG} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PostInstall.cmake)")
 	
 	add_custom_target(uninstall ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Uninstall.cmake)
 endif()
