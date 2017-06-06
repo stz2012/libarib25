@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limit build types" FORCE)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE INTERNAL "limit build types" FORCE)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
 set(CMAKE_INSTALL_SO_NO_EXE False)
