@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
 static void show_usage()
 {
-	fprintf(stderr, "b25 - ARIB STD-B25 test program version %s (%s)\n", ARIB25_VERSION, BUILD_GIT_REVISION);
+	fprintf(stderr, "b25 - ARIB STD-B25 test program version %s (%s)\n", ARIB25_VERSION_STRING, BUILD_GIT_REVISION);
 	fprintf(stderr, "  built with %s %s on %s\n", BUILD_CC_NAME, BUILD_CC_VERSION, BUILD_OS_NAME);
 	fprintf(stderr, "usage: b25 [options] src.m2t dst.m2t [more pair ..]\n");
 	fprintf(stderr, "options:\n");

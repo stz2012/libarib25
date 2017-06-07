@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: @CMAKE_LIBRARY_PREFIX@@ARIB25_LIB_NAME@
 Description: @ARIB25_DESCRIPTION@
 URL: @ARIB25_URL@
-Version: @ARIB25_VERSION@
+Version: @ARIB25_VERSION_STRING@
 Requires: libpcsclite
 Libs: -L${libdir} -l@ARIB25_LIB_NAME@
 Cflags: -I${includedir}
