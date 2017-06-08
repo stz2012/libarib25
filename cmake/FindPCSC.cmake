@@ -1,0 +1,31 @@
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND AND WITH_PCSC_PACKAGE AND NOT CMAKE_CROSSCOMPILING)
+	if(WITH_PCSC_PACKAGE STREQUAL "libpcsclite")
+		pkg_check_modules(PCSC ${WITH_PCSC_PACKAGE})
+	else()
+		pkg_check_modules(PCSC REQUIRED ${WITH_PCSC_PACKAGE})
+	endif()
+endif()
+
+if(NOT PCSC_FOUND)
+	find_path(PCSC_INCLUDE_DIRS NAMES WinSCard.h winscard.h PATH_SUFFIXES PCSC)
+	if(WITH_PCSC_LIBRARY)
+		find_library(PCSC_LIBRARIES NAMES ${WITH_PCSC_LIBRARY})
+	else()
+		find_library(PCSC_LIBRARIES NAMES pcsclite PCSC WinSCard winscard)
+	endif()
+
+	if(PCSC_LIBRARIES)
+		set(PCSC_FOUND True)
+	endif()
+endif()
+
+if(NOT PCSC_FOUND AND NOT WITH_PCSC_LIBRARY AND WIN32)
+	set(PCSC_LIBRARIES winscard)
+	set(PCSC_FOUND True)
+endif()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PCSC DEFAULT_MSG PCSC_LIBRARIES)
+
+mark_as_advanced(PCSC_INCLUDE_DIRS PCSC_LIBRARIES)
