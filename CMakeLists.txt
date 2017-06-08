@@ -67,6 +67,7 @@ set_target_properties(arib25-static PROPERTIES OUTPUT_NAME ${ARIB25_LIB_NAME})
 target_link_libraries(arib25-static PRIVATE ${WINSCARD_LIBRARIES})
 
 add_library(arib25-shared SHARED $<TARGET_OBJECTS:arib25-objlib> ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+set_target_properties(arib25-shared PROPERTIES MACOSX_RPATH ON)
 set_target_properties(arib25-shared PROPERTIES DEFINE_SYMBOL ARIB25_DLL)
 set_target_properties(arib25-shared PROPERTIES COMPILE_DEFINITIONS ARIB25_DLL)
 set_target_properties(arib25-shared PROPERTIES OUTPUT_NAME ${ARIB25_LIB_NAME})
