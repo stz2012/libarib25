@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/stz2012/libarib25.svg?branch=master)](https://travis-ci.org/stz2012/libarib25)
-
+<pre>
 【名称】
 
 　ARIB STD-B25 仕様確認テストプログラムソースコード
@@ -371,4 +371,4 @@
 
 　　http://www.marumo.ne.jp/db2007_b.htm#25 又は
 　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.0.lzh
-
+</pre>
