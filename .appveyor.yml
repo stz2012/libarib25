@@ -1,0 +1,102 @@
+version: "0.2.5 build #{build}"
+shallow_clone: true
+
+environment:
+  SOLUTION: arib_std_b25.sln
+  BUILDENV: MSBUILD
+
+  MSYS2_DIR: msys64
+
+  CYGWIN_MIRROR: http://cygwin.mirror.constant.com
+  CYGWIN_PACKAGES: mpfr,mpc,gcc-core,gcc=g++,make,cmake
+
+  matrix:
+    # Latest version of VisualStudio
+    - GENERATOR: "Visual Studio 15 2017"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - GENERATOR: "Visual Studio 15 2017 Win64"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+    # Windows Server 2008R2 or Windows 7 or above
+    - GENERATOR: "Visual Studio 14 2015"
+    - GENERATOR: "Visual Studio 14 2015 Win64"
+    - GENERATOR: "Visual Studio 12 2013"
+    - GENERATOR: "Visual Studio 12 2013 Win64"
+    - GENERATOR: "Visual Studio 11 2012"
+    - GENERATOR: "Visual Studio 11 2012 Win64"
+
+    # WindowsXP or above (C99 is not yet supported)
+    - GENERATOR: "Visual Studio 10 2010"
+    - GENERATOR: "Visual Studio 10 2010 Win64"
+    - GENERATOR: "Visual Studio 9 2008"
+
+    # MSYS2
+    - GENERATOR: "MSYS Makefiles"
+      BUILDENV: MSYS2
+      MSYS2_ARCH: i686
+      MSYSTEM: MINGW32
+
+    - GENERATOR: "MSYS Makefiles"
+      BUILDENV: MSYS2
+      MSYS2_ARCH: x86_64
+      MSYSTEM: MINGW64
+
+    # Cygwin
+    - GENERATOR: "Unix Makefiles"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      BUILDENV: CYGWIN
+      CYGWIN_DIR: cygwin
+      CYGWIN_ARCH: x86
+
+    - GENERATOR: "Unix Makefiles"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      BUILDENV: CYGWIN
+      CYGWIN_DIR: cygwin64
+      CYGWIN_ARCH: x86_64
+
+install:
+  - if "%BUILDENV%" == "MSYS2"
+      set MSYS2_ROOT=%HOMEDRIVE%\%MSYS2_DIR%
+  - if "%BUILDENV%" == "CYGWIN"
+      set CYGWIN_ROOT=%HOMEDRIVE%\%CYGWIN_DIR%
+
+  - if "%BUILDENV%" == "CYGWIN" (
+      appveyor
+        DownloadFile "https://cygwin.com/setup-%CYGWIN_ARCH%.exe"
+        -FileName "%CYGWIN_ROOT%/setup-%CYGWIN_ARCH%.exe" &&
+      "%CYGWIN_ROOT%/setup-%CYGWIN_ARCH%.exe"
+        -qnNdOW
+        --root "%CYGWIN_ROOT%"
+        --site "%CYGWIN_MIRROR%"
+        --local-package-dir "%CYGWIN_ROOT%/var/cache/setup"
+        --packages "%CYGWIN_PACKAGES%"
+    )
+
+before_build:
+  - mkdir build
+
+  - if "%BUILDENV%" == "MSBUILD" (
+      cd build &&
+      cmake -G "%GENERATOR%" ..
+    )
+
+  - if "%BUILDENV%" == "MSYS2" (
+      mklink /D "%MSYS2_ROOT%/home/%USERNAME%/work" "%APPVEYOR_BUILD_FOLDER%" &&
+      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd work/build; cmake -G "%GENERATOR%" ..'
+    )
+
+  - if "%BUILDENV%" == "CYGWIN" (
+      mklink /D "%CYGWIN_ROOT%/home/%USERNAME%/work" "%APPVEYOR_BUILD_FOLDER%" &&
+      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd ~/work/build; cmake -G "%GENERATOR%" ..'
+    )
+
+
+build_script:
+  - if "%BUILDENV%" == "MSBUILD"
+      msbuild "%SOLUTION%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+  - if "%BUILDENV%" == "MSYS2"
+      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd ~/work/build; make'
+
+  - if "%BUILDENV%" == "CYGWIN"
+      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd ~/work/build; make'
