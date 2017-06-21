@@ -6,8 +6,10 @@
 
 #include <math.h>
 
-#if defined(WIN32)
-	#include <windows.h>
+#if defined(WIN32) || defined(__CYGWIN__)
+#  include <windows.h>
+#else
+#  include <wintypes.h>
 #endif
 #include <winscard.h>
 

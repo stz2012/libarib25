@@ -2,10 +2,12 @@
 #include <config.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-#  if defined(__x86_64__)
+#  if !defined(__APPLE__)
+#    if defined(__x86_64__)
 const char elf_interp[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
-#  else
+#    else
 const char elf_interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
+#    endif
 #  endif
 #include <unistd.h>
 
