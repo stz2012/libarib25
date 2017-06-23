@@ -31,6 +31,23 @@ matrix:
             - cmake-data
             - libpcsclite-dev
 
+    # ARM Raspbian (jessie)
+    - os: linux
+      sudo: required
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - qemu-user-static
+            - debootstrap
+      env:
+        - TARGET_DIST=raspbian
+        - TARGET_REPO=jessie
+        - TARGET_ARCH=armhf
+        - TARGET_SITE=http://archive.raspbian.com/raspbian
+        - TARGET_DEPS=git,cmake,libpcsclite-dev
+        - QEMU_CPU=arm11mpcore
+
     # MacOS X 10.10 (Yosemite)
     - os: osx
       osx_image: xcode6.4
@@ -46,9 +63,35 @@ matrix:
       osx_image: xcode8
       compiler: clang
 
+cache:
+  directories:
+    - ${HOME}/rootfs/${TARGET_DIST}/${TARGET_REPO}/${TARGET_ARCH}/var/cache/apt/archives
+
+before_script:
+  - if [ ! -z "${TARGET_DIST}" ]; then
+      ROOTFS="${HOME}/rootfs/${TARGET_DIST}/${TARGET_REPO}/${TARGET_ARCH}";
+      if [ ! -f "/usr/share/debootstrap/scripts/${TARGET_REPO}" ]; then
+        sudo ln -s "/usr/share/debootstrap/scripts/sid" "/usr/share/debootstrap/scripts/${TARGET_REPO}";
+      fi;
+      sudo mkdir -p "${ROOTFS}";
+      sudo qemu-debootstrap
+        --no-check-gpg --variant=buildd
+        --include="${TARGET_DEPS}" --arch="${TARGET_ARCH}"
+        "${TARGET_REPO}" "${ROOTFS}" "${TARGET_SITE}";
+      sudo mount --bind /home "${ROOTFS}/home";
+      export SHELL="sudo chroot ${ROOTFS} /bin/bash";
+      export WORKDIR=$(pwd);
+    else
+      export SHELL="/bin/bash";
+      export WORKDIR=$(pwd);
+    fi
+
 script:
-  - install -d build
-  - cd build
-  - cmake ..
-  - make VERBOSE=1
-  - ./b25 2>&1 | grep "ARIB STD-B25"
+  - >
+    ${SHELL} <<EOF
+      install -d "${WORKDIR}/build"
+      cd "${WORKDIR}/build"
+      cmake ..
+      make VERBOSE=1
+      ./b25 2>&1 | grep --color=auto "ARIB STD-B25"
+    EOF
