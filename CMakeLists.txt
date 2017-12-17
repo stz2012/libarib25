@@ -42,6 +42,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "(GNU|Clang)")
 	set(CMAKE_SHARED_LINKER_FLAGS "-fvisibility=hidden")
 
 	if(UNIX AND NOT CYGWIN)
+		include(ElfInterp)
 		set(CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
 		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -eshow_version")
 	else(MINGW)
