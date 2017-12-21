@@ -33,7 +33,11 @@ BEGIN
 #else
       VALUE "OriginalFilename", "@ARIB25_CMD_NAME@@CMAKE_EXECUTABLE_SUFFIX@"
 #endif
+#if defined(UNICODE)
+      VALUE "ProductName",      "@ARIB25_PRODUCT@ UNICODE"
+#else
       VALUE "ProductName",      "@ARIB25_PRODUCT@"
+#endif
       VALUE "ProductVersion",   "@ARIB25_VERSION_STRING@ (" BUILD_GIT_REVISION ")"
     END
   END

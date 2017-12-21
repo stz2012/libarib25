@@ -20,6 +20,10 @@ if (UNIX OR MSYS)
 	set(WITH_PCSC_LIBRARY "" CACHE STRING "library name for PC/SC")
 endif()
 
+if(WIN32)
+	option(USE_UNICODE "enable unicode support" ON)
+endif()
+
 set(ARIB25_LIB_NAME "arib25")
 set(ARIB25_CMD_NAME "b25")
 
@@ -47,6 +51,10 @@ if(CMAKE_C_COMPILER_ID MATCHES "(GNU|Clang)")
 	else(MINGW)
 		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-stdcall-fixup -static-libgcc")
 	endif()
+
+	if(MINGW AND USE_UNICODE)
+		set(CMAKE_C_FLAGS "-municode ${CMAKE_C_FLAGS}")
+	endif()
 elseif(CMAKE_C_COMPILER_ID MATCHES "(MSVC)")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 	set(CMAKE_STATIC_LIBRARY_PREFIX lib)
@@ -56,6 +64,10 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions("-DDEBUG")
+endif()
+
+if(USE_UNICODE)
+	add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
 add_definitions("-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64")
