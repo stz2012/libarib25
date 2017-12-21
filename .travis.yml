@@ -94,4 +94,7 @@ script:
       cmake ..
       make VERBOSE=1
       ./b25 2>&1 | grep --color=auto "ARIB STD-B25"
+      if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
+        ./libarib25.so 2>&1 | grep --color=auto "ARIB STD-B25"
+      fi
     EOF
