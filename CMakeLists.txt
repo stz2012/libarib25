@@ -5,7 +5,6 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE INTERNAL "limit build types"
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
 set(CMAKE_INSTALL_SO_NO_EXE False)
-set(CMAKE_LEGACY_CYGWIN_WIN32 False)
 
 project(arib_std_b25 C)
 enable_language(CXX)
