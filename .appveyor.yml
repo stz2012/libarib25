@@ -8,7 +8,7 @@ environment:
   MSYS2_DIR: msys64
 
   CYGWIN_MIRROR: http://cygwin.mirror.constant.com
-  CYGWIN_PACKAGES: mpfr,mpc,gcc-core,gcc=g++,make,cmake
+  CYGWIN_PACKAGES: mpfr,mpc,gcc-core,gcc-g++,make,cmake
 
   matrix:
     # Latest version of VisualStudio
