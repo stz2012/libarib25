@@ -1,17 +1,17 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.5)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE INTERNAL "limit build types" FORCE)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
 set(CMAKE_INSTALL_SO_NO_EXE False)
-set(CMAKE_LEGACY_CYGWIN_WIN32 False)
 
 project(arib_std_b25 C)
 enable_language(CXX)
 
 include(GitRevision)
 include(GenerateExportHeader)
+include(GNUInstallDirs)
 find_package(PCSC REQUIRED)
 
 if (UNIX OR MSYS)
@@ -108,10 +108,10 @@ configure_file(src/version.rc.in version.rc @ONLY)
 if(UNIX AND NOT CYGWIN)
 	configure_file(src/libarib25.pc.in ${CMAKE_SHARED_LIBRARY_PREFIX}${ARIB25_LIB_NAME}.pc @ONLY)
 
-	install(TARGETS b25 RUNTIME DESTINATION bin)
-	install(TARGETS arib25-static arib25-shared ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
-	install(FILES src/arib_std_b25.h src/b_cas_card.h src/multi2.h src/ts_section_parser.h src/portable.h ${CMAKE_CURRENT_BINARY_DIR}/arib25_api.h DESTINATION include/arib25)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${ARIB25_LIB_NAME}.pc DESTINATION lib/pkgconfig)
+	install(TARGETS b25 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(TARGETS arib25-static arib25-shared ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	install(FILES src/arib_std_b25.h src/b_cas_card.h src/multi2.h src/ts_section_parser.h src/portable.h ${CMAKE_CURRENT_BINARY_DIR}/arib25_api.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/arib25)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${ARIB25_LIB_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 	install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DLDCONFIG_EXECUTABLE=${LDCONFIG_EXECUTABLE} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PostInstall.cmake)")
 	
 	add_custom_target(uninstall ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Uninstall.cmake)
