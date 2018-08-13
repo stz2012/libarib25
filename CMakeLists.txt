@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.5)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE INTERNAL "limit build types" FORCE)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
