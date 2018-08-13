@@ -1,7 +1,7 @@
 find_package(Git)
-if(GIT_FOUND)
+if(GIT_FOUND AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
 	execute_process(
-		COMMAND ${GIT_EXECUTABLE} describe --always
+		COMMAND ${GIT_EXECUTABLE} describe --always --tags
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		OUTPUT_VARIABLE GIT_REVISION
 		OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -17,6 +17,10 @@ if(GIT_FOUND)
 		set(GIT_REVISION "${GIT_REVISION} dirty")
 	endif()
 else()
-	set(GIT_REVISION "n/a")
+	if (EXISTS ${CMAKE_SOURCE_DIR}/.tarball-version)
+		file(STRINGS ${CMAKE_SOURCE_DIR}/.tarball-version GIT_REVISION LIMIT_COUNT 1)
+	else()
+		set(GIT_REVISION "Unknown Source")
+	endif()
 	set(GIT_IS_DIRTY False)
 endif()
