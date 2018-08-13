@@ -7,7 +7,6 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 set(CMAKE_INSTALL_SO_NO_EXE False)
 
 project(arib_std_b25 C)
-enable_language(CXX)
 
 include(GitRevision)
 include(GenerateExportHeader)
