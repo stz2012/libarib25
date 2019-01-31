@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 2.8.5)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE INTERNAL "limit build types" FORCE)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "default build type")
 
 set(CMAKE_INSTALL_SO_NO_EXE False)
 
 project(arib_std_b25 C)
+enable_language(CXX)
 
 include(GitRevision)
 include(GenerateExportHeader)
