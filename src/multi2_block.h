@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <utility>
+
+#include "portable.h"
 
 namespace multi2 {
 
@@ -21,20 +22,23 @@ struct block {
 	T left;
 	T right;
 
+	inline block() { }
+	inline block(const T &l, const T &r) : left(l), right(r) { }
+
 	void load(const uint8_t *p);
 	void store(uint8_t *p) const;
 
 	block<T> operator^(const block<T> &other) const;
 
-	std::pair<block<T>, block<uint32_t>> cbc_post_decrypt(const block<T> &ciphertext, const block<uint32_t> &state) const;
+	std::pair<block<T>, block<uint32_t> > cbc_post_decrypt(const block<T> &ciphertext, const block<uint32_t> &state) const;
 };
 
 template<typename T>
-constexpr size_t block_size() {
+inline size_t block_size() {
 	return sizeof(T) * 2;
 }
 
-using cbc_state = block<uint32_t>;
+typedef block<uint32_t> cbc_state;;
 
 template<>
 inline void block<uint32_t>::load(const uint8_t *p) {
@@ -50,7 +54,7 @@ inline void block<uint32_t>::store(uint8_t *p) const {
 
 template<>
 inline block<uint32_t> block<uint32_t>::operator^(const block<uint32_t> &other) const {
-	return { left ^ other.left, right ^ other.right };
+	return block<uint32_t>(left ^ other.left, right ^ other.right);
 }
 
 template<>
@@ -71,7 +75,7 @@ inline T rot1_sub(const T &v) {
 
 template<typename T>
 inline T rot1_add_dec(const T &v) {
-	return rot<1>(v) + v - T{ 1 };
+	return rot<1>(v) + v - T(1);
 }
 
 }
