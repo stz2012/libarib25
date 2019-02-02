@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #  include <windows.h>
 #  include <tchar.h>
 #else

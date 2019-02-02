@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	#include <io.h>
 	#include <windows.h>
 	#include <crtdbg.h>
@@ -46,7 +46,7 @@ int _tmain(int argc, TCHAR **argv)
 	int n;
 	OPTION opt;
 	
-	#if defined(WIN32)
+	#if defined(_WIN32)
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
@@ -66,7 +66,7 @@ int _tmain(int argc, TCHAR **argv)
 		test_arib_std_b25(argv[n+0], argv[n+1], &opt);
 	}
 	
-	#if defined(WIN32)
+	#if defined(_WIN32)
 	_CrtDumpMemoryLeaks();
 	#endif
 
@@ -166,7 +166,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 
 	int64_t total;
 	int64_t offset;
-#if defined(WIN32)
+#if defined(_WIN32)
 	unsigned long tick,tock;
 #else
 	struct timeval tick,tock;
@@ -248,7 +248,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 	}
 
 	offset = 0;
-#if defined(WIN32)
+#if defined(_WIN32)
 	tock = GetTickCount();
 #else
 	gettimeofday(&tock, NULL);
@@ -281,7 +281,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 		if(opt->verbose != 0){
 			m = (int)(10000*offset/total);
 			mbps = 0.0;
-#if defined(WIN32)
+#if defined(_WIN32)
 			tick = GetTickCount();
 			if (tick-tock > 100) {
 				mbps = offset;
@@ -324,7 +324,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 
 	if(opt->verbose != 0){
 		mbps = 0.0;
-#if defined(WIN32)
+#if defined(_WIN32)
 		tick = GetTickCount();
 		if (tick-tock > 100) {
 			mbps = offset;
@@ -362,7 +362,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 			_ftprintf(stderr, _T("  channel:               %d\n"), pgrm.program_number);
 			_ftprintf(stderr, _T("  unpurchased ECM count: %d\n"), pgrm.ecm_unpurchased_count);
 			_ftprintf(stderr, _T("  last ECM error code:   %04x\n"), pgrm.last_ecm_error_code);
-			#if defined(WIN32)
+			#if defined(_WIN32)
 			_ftprintf(stderr, _T("  undecrypted TS packet: %I64d\n"), pgrm.undecrypted_packet_count);
 			_ftprintf(stderr, _T("  total TS packet:       %I64d\n"), pgrm.total_packet_count);
 			#else

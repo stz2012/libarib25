@@ -1,7 +1,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#if (defined(WIN32) && defined(_MSC_VER) && _MSC_VER < 1800) 
+#if (defined(_WIN32) && defined(_MSC_VER) && _MSC_VER < 1800)
 
 typedef unsigned char     uint8_t;
 typedef   signed char      int8_t;
@@ -19,7 +19,7 @@ typedef   signed __int64  int64_t;
 
 #endif
 
-#if !defined(WIN32)
+#if !defined(_WIN32)
 	#define _open  open
 	#define _close close
 	#define _read  read
