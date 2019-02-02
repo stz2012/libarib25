@@ -96,7 +96,7 @@ if(PCSC_INCLUDE_DIRS)
 endif()
 link_directories(${PCSC_LIBRARY_DIRS})
 
-add_library(arib25-objlib OBJECT src/arib_std_b25.c src/b_cas_card.c src/multi2.c src/ts_section_parser.c src/version.c)
+add_library(arib25-objlib OBJECT src/arib_std_b25.c src/b_cas_card.c src/multi2.cc src/ts_section_parser.c src/version.c)
 set_target_properties(arib25-objlib PROPERTIES COMPILE_DEFINITIONS ARIB25_DLL)
 
 add_library(arib25-static STATIC $<TARGET_OBJECTS:arib25-objlib>)
