@@ -166,9 +166,9 @@ inline std::pair<block<x86::xmm>, cbc_state> block<x86::xmm>::cbc_post_decrypt(c
 	__m128i c1 = c.right.value();
 
 #if defined(__SSSE3__)
-	int s = _MM_SHUFFLE(1, 0, 2, 3);
+	const int s = _MM_SHUFFLE(1, 0, 2, 3);
 #else
-	int s = _MM_SHUFFLE(2, 1, 0, 3);
+	const int s = _MM_SHUFFLE(2, 1, 0, 3);
 #endif
 	__m128i b0 = _mm_shuffle_epi32(c0, s); // 2 0 1 3 / 2 1 0 3
 	__m128i b1 = _mm_shuffle_epi32(c1, s);

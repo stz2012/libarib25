@@ -9,7 +9,7 @@
 #include "multi2_ymm.h"
 #include "multi2_xmm.h"
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__clang__)
 # define MULTI2_ALWAYS_INLINE __attribute__((always_inline))
 # define MULTI2_LIKELY(x)     __builtin_expect(!!(x), 1)
 #else
