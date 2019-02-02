@@ -23,7 +23,11 @@ private:
 	__m128i v;
 
 public:
-	inline xmm() { v = _mm_undefined_si128(); }
+	inline xmm() {
+#if !defined(NO_MM_UNDEFINED)
+		v = _mm_undefined_si128();
+#endif
+	}
 	inline xmm(uint32_t n) { v = _mm_set1_epi32(n); }
 	inline xmm(const __m128i &r) { v = r; }
 

@@ -24,7 +24,11 @@ private:
 	__m256i v1;
 
 public:
-	inline ymm2() { v0 = v1 = _mm256_undefined_si256(); }
+	inline ymm2() {
+#if !defined(NO_MM_UNDEFINED)
+		 v0 = v1 = _mm256_undefined_si256();
+#endif
+	}
 	inline ymm2(uint32_t n) { v0 = v1 = _mm256_set1_epi32(n); }
 	inline ymm2(const __m256i &r0, const __m256i &r1) {
 		v0 = r0;

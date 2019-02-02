@@ -36,4 +36,11 @@ typedef   signed __int64  int64_t;
 	#define _S_IWRITE     (S_IWUSR|S_IWGRP|S_IWOTH)
 #endif
 
+#if defined(__GNUC__) && (__GNUC__ < 5 && !(__GNUC__ == 4 &&  9 <= __GNUC_MINOR__))
+	#define NO_MM_UNDEFINED
+#endif
+#if defined(__clang__) && (__clang_major__ < 4 && !(__clang_major__ == 3 &&  8 <= __clang_minor__))
+	#define NO_MM_UNDEFINED
+#endif
+
 #endif /* PORTABLE_H */
