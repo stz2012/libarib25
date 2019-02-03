@@ -8,6 +8,8 @@
 #include "multi2_ymm2.h"
 #include "multi2_ymm.h"
 #include "multi2_xmm.h"
+#include "multi2_neon2.h"
+#include "multi2_neon.h"
 
 #if defined(__GNUC__) || defined(__clang__)
 # define MULTI2_ALWAYS_INLINE __attribute__((always_inline))
@@ -190,6 +192,20 @@ inline void decrypt_cbc_ofb(uint8_t *buf, size_t n, const iv_type &iv, const wor
 #elif defined(__SSE2__)
 	while (block_size<x86::xmm>() <= n) {
 		decrypt_block<x86::xmm>(buf, n, state, key, round);
+	}
+
+#elif defined(__ARM_NEON__)
+	if (MULTI2_LIKELY(n == 184)) {
+		decrypt_block<arm::neon2<7> >(buf, n, state, key, round);
+		decrypt_block<arm::neon2<8> >(buf, n, state, key, round);
+		decrypt_block<arm::neon2<8> >(buf, n, state, key, round);
+		return;
+	}
+	while (block_size<arm::neon2<8> >() <= n) {
+		decrypt_block<arm::neon2<8> >(buf, n, state, key, round);
+	}
+	if (block_size<arm::neon>() <= n) {
+		decrypt_block<arm::neon>(buf, n, state, key, round);
 	}
 
 #endif
