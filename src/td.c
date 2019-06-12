@@ -279,7 +279,7 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 		
 		offset += sbuf.size;
 		if(opt->verbose != 0){
-			m = (int)(10000*offset/total);
+			m = (int)((uint64_t)10000*offset/total);
 			mbps = 0.0;
 #if defined(_WIN32)
 			tick = GetTickCount();
