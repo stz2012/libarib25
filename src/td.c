@@ -87,7 +87,7 @@ static void show_usage()
 	_ftprintf(stderr, _T("     0: ignore EMM (default)\n"));
 	_ftprintf(stderr, _T("     1: send EMM to B-CAS card\n"));
 	_ftprintf(stderr, _T("  -p power_on_control_info\n"));
-	_ftprintf(stderr, _T("     0: do nothing additionaly\n"));
+	_ftprintf(stderr, _T("     0: do nothing additionally\n"));
 	_ftprintf(stderr, _T("     1: show B-CAS EMM receiving request (default)\n"));
 	_ftprintf(stderr, _T("  -v verbose\n"));
 	_ftprintf(stderr, _T("     0: silent\n"));
