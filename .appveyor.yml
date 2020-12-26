@@ -12,43 +12,58 @@ environment:
 
   matrix:
     # Latest version of VisualStudio
-    - GENERATOR: "Visual Studio 15 2017"
+    - JOB_NAME: "Visual Studio 15 2017 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 15 2017"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    - GENERATOR: "Visual Studio 15 2017 Win64"
+    - JOB_NAME: "Visual Studio 15 2017 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
     # Windows Server 2008R2 or Windows 7 or above
-    - GENERATOR: "Visual Studio 14 2015"
-    - GENERATOR: "Visual Studio 14 2015 Win64"
-    - GENERATOR: "Visual Studio 12 2013"
-    - GENERATOR: "Visual Studio 12 2013 Win64"
-    - GENERATOR: "Visual Studio 11 2012"
-    - GENERATOR: "Visual Studio 11 2012 Win64"
+    - JOB_NAME: "Visual Studio 14 2015 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 14 2015"
+    - JOB_NAME: "Visual Studio 14 2015 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
+    - JOB_NAME: "Visual Studio 12 2013 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 12 2013"
+    - JOB_NAME: "Visual Studio 12 2013 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+    - JOB_NAME: "Visual Studio 11 2012 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 11 2012"
+    - JOB_NAME: "Visual Studio 11 2012 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 11 2012 Win64"
 
     # WindowsXP or above (C99 is not yet supported)
-    - GENERATOR: "Visual Studio 10 2010"
-    - GENERATOR: "Visual Studio 10 2010 Win64"
-    - GENERATOR: "Visual Studio 9 2008"
+    - JOB_NAME: "Visual Studio 10 2010 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 10 2010"
+    - JOB_NAME: "Visual Studio 10 2010 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 10 2010 Win64"
+    - JOB_NAME: "Visual Studio 9 2008 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 9 2008"
 
     # MSYS2
-    - GENERATOR: "MSYS Makefiles"
+    - JOB_NAME: "MSYS2 MinGW32 (i686)"
+      CMAKE_GENERATOR: "MSYS Makefiles"
       BUILDENV: MSYS2
       MSYS2_ARCH: i686
       MSYSTEM: MINGW32
 
-    - GENERATOR: "MSYS Makefiles"
+    - JOB_NAME: "MSYS2 MinGW64 (x86_64)"
+      CMAKE_GENERATOR: "MSYS Makefiles"
       BUILDENV: MSYS2
       MSYS2_ARCH: x86_64
       MSYSTEM: MINGW64
 
     # Cygwin
-    - GENERATOR: "Unix Makefiles"
+    - JOB_NAME: "Cygwin32 (x86)"
+      CMAKE_GENERATOR: "Unix Makefiles"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       BUILDENV: CYGWIN
       CYGWIN_DIR: cygwin
       CYGWIN_ARCH: x86
 
-    - GENERATOR: "Unix Makefiles"
+    - JOB_NAME: "Cygwin64 (x86_64)"
+      CMAKE_GENERATOR: "Unix Makefiles"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       BUILDENV: CYGWIN
       CYGWIN_DIR: cygwin64
@@ -77,26 +92,22 @@ before_build:
 
   - if "%BUILDENV%" == "MSBUILD" (
       cd build &&
-      cmake -G "%GENERATOR%" ..
+      cmake --version &&
+      cmake ..
     )
 
-  - if "%BUILDENV%" == "MSYS2" (
-      mklink /D "%MSYS2_ROOT%/home/%USERNAME%/work" "%APPVEYOR_BUILD_FOLDER%" &&
-      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd work/build; cmake -G "%GENERATOR%" ..'
-    )
+  - if "%BUILDENV%" == "MSYS2"
+      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake ..'
 
-  - if "%BUILDENV%" == "CYGWIN" (
-      mklink /D "%CYGWIN_ROOT%/home/%USERNAME%/work" "%APPVEYOR_BUILD_FOLDER%" &&
-      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd ~/work/build; cmake -G "%GENERATOR%" ..'
-    )
-
+  - if "%BUILDENV%" == "CYGWIN"
+      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake ..'
 
 build_script:
   - if "%BUILDENV%" == "MSBUILD"
       msbuild "%SOLUTION%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
   - if "%BUILDENV%" == "MSYS2"
-      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd ~/work/build; make'
+      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; make'
 
   - if "%BUILDENV%" == "CYGWIN"
-      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd ~/work/build; make'
+      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; make'
