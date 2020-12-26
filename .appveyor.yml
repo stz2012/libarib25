@@ -75,14 +75,14 @@ environment:
     # Cygwin
     - JOB_NAME: "Cygwin32 (x86)"
       CMAKE_GENERATOR: "Unix Makefiles"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       BUILDENV: CYGWIN
       CYGWIN_DIR: cygwin
       CYGWIN_ARCH: x86
 
     - JOB_NAME: "Cygwin64 (x86_64)"
       CMAKE_GENERATOR: "Unix Makefiles"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       BUILDENV: CYGWIN
       CYGWIN_DIR: cygwin64
       CYGWIN_ARCH: x86_64
@@ -115,10 +115,10 @@ before_build:
     )
 
   - if "%BUILDENV%" == "MSYS2"
-      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake ..'
+      "%MSYS2_ROOT%/usr/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake --version; cmake ..'
 
   - if "%BUILDENV%" == "CYGWIN"
-      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake ..'
+      "%CYGWIN_ROOT%/bin/bash" --login -c 'cd "${APPVEYOR_BUILD_FOLDER}/build"; cmake --version; cmake ..'
 
 build_script:
   - if "%BUILDENV%" == "MSBUILD"
