@@ -12,6 +12,24 @@ environment:
 
   matrix:
     # Latest version of VisualStudio
+    - JOB_NAME: "Visual Studio 16 2019 (Win32)"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      CMAKE_GENERATOR_PLATFORM: Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - JOB_NAME: "Visual Studio 16 2019 (Win64)"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      CMAKE_GENERATOR_PLATFORM: x64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - JOB_NAME: "Visual Studio 16 2019 (ARM)"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      CMAKE_GENERATOR_PLATFORM: ARM
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - JOB_NAME: "Visual Studio 16 2019 (ARM64)"
+      CMAKE_GENERATOR: "Visual Studio 16 2019"
+      CMAKE_GENERATOR_PLATFORM: ARM64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    # Windows Server 2012R2 or Windows 8 or above
     - JOB_NAME: "Visual Studio 15 2017 (Win32)"
       CMAKE_GENERATOR: "Visual Studio 15 2017"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
