@@ -80,21 +80,20 @@ before_script:
         "${TARGET_REPO}" "${ROOTFS}" "${TARGET_SITE}";
       sudo mount --bind /home "${ROOTFS}/home";
       export SHELL="sudo chroot ${ROOTFS} /bin/bash";
-      export WORKDIR=$(pwd);
     else
       export SHELL="/bin/bash";
-      export WORKDIR=$(pwd);
     fi
 
 script:
   - >
-    ${SHELL} <<EOF
-      install -d "${WORKDIR}/build"
-      cd "${WORKDIR}/build"
+    ${SHELL} -e <<EOF
+      install -d "${TRAVIS_BUILD_DIR}/build"
+      cd "${TRAVIS_BUILD_DIR}/build"
       cmake ..
       make VERBOSE=1
       ./b25 2>&1 | grep --color=auto "ARIB STD-B25"
       if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
         ./libarib25.so 2>&1 | grep --color=auto "ARIB STD-B25"
       fi
+      exit
     EOF
