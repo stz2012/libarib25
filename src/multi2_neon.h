@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__ARM_NEON__)
+#if defined(__ARM_NEON__) || defined(__ARM_NEON)
 
 #if !defined(__BYTE_ORDER__) || !defined(__ORDER_LITTLE_ENDIAN__) || (__BYTE_ORDER__) != (__ORDER_LITTLE_ENDIAN__)
 	#error "Currently, USE_NEON is only for little-endian."
@@ -110,4 +110,4 @@ inline arm::neon rot1_add_dec<arm::neon>(const arm::neon &v) {
 
 }
 
-#endif /* __ARM_NEON__ */
+#endif /* __ARM_NEON__ || __ARM_NEON */

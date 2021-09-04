@@ -194,7 +194,7 @@ inline void decrypt_cbc_ofb(uint8_t *buf, size_t n, const iv_type &iv, const wor
 		decrypt_block<x86::xmm>(buf, n, state, key, round);
 	}
 
-#elif defined(__ARM_NEON__)
+#elif defined(__ARM_NEON__) || defined(__ARM_NEON)
 	if (MULTI2_LIKELY(n == 184)) {
 		decrypt_block<arm::neon2<7> >(buf, n, state, key, round);
 		decrypt_block<arm::neon2<8> >(buf, n, state, key, round);

@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__ARM_NEON__)
+#if defined(__ARM_NEON__) || defined(__ARM_NEON)
 
 #include <utility>
 #include <arm_neon.h>
@@ -198,4 +198,4 @@ inline arm::neon2<S> rot1_add_dec(const arm::neon2<S> &v) {
 
 }
 
-#endif /* __ARM_NEON__ */
+#endif /* __ARM_NEON__ || __ARM_NEON */
