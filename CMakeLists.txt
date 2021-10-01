@@ -138,5 +138,9 @@ if(UNIX AND NOT CYGWIN)
 	install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -DLDCONFIG_EXECUTABLE=${LDCONFIG_EXECUTABLE} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PostInstall.cmake)")
 	
 	add_custom_target(uninstall ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Uninstall.cmake)
+elseif(WIN32)
+	install(TARGETS b25 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(TARGETS arib25-static arib25-shared ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	install(FILES src/arib_std_b25.h src/b_cas_card.h src/multi2.h src/ts_section_parser.h src/portable.h ${CMAKE_CURRENT_BINARY_DIR}/arib25_api.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/arib25)
+	add_custom_target(uninstall ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Uninstall.cmake)
 endif()
-
