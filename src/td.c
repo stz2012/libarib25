@@ -93,12 +93,15 @@ static void show_usage()
 	_ftprintf(stderr, _T("  -v verbose\n"));
 	_ftprintf(stderr, _T("     0: silent\n"));
 	_ftprintf(stderr, _T("     1: show processing status (default)\n"));
+	_ftprintf(stderr, _T("  -h, --help\n"));
+	_ftprintf(stderr, _T("     show this help message\n"));
 	_ftprintf(stderr, _T("\n"));
 }
 
 static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 {
 	static struct option longopts[] = {
+		{"help", no_argument, NULL, 'h'},
 		{NULL, 0, NULL, 0}
 	};
 	
@@ -108,7 +111,7 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 	dst->power_ctrl = 1;
 	dst->verbose = 1;
 
-	while (getopt_long(argc, argv, "m:p:r:s:v:", longopts, NULL) != -1) {
+	while (getopt_long(argc, argv, "m:p:r:s:v:h", longopts, NULL) != -1) {
 		switch (optopt) {
 			case 'm':
 				dst->emm = _ttoi(optarg);
@@ -128,6 +131,11 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 
 			case 'v':
 				dst->verbose = _ttoi(optarg);
+				break;
+
+			case 'h':
+				show_usage();
+				exit(EXIT_SUCCESS);
 				break;
 
 			default:
