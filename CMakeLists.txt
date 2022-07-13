@@ -104,6 +104,8 @@ endif()
 link_directories(${PCSC_LIBRARY_DIRS})
 
 add_library(arib25-objlib OBJECT src/arib_std_b25.c src/b_cas_card.c src/multi2.cc src/ts_section_parser.c src/version.c)
+set_target_properties(arib25-objlib PROPERTIES C_STANDARD 90)
+set_target_properties(arib25-objlib PROPERTIES CXX_STANDARD 98)
 set_target_properties(arib25-objlib PROPERTIES COMPILE_DEFINITIONS ARIB25_DLL)
 
 add_library(arib25-static STATIC $<TARGET_OBJECTS:arib25-objlib>)
@@ -120,7 +122,7 @@ set_target_properties(arib25-shared PROPERTIES VERSION ${ARIB25_VERSION_NUMBER})
 target_link_libraries(arib25-shared PRIVATE ${PCSC_LIBRARIES})
 generate_export_header(arib25-shared BASE_NAME arib25_api EXPORT_FILE_NAME arib25_api.h)
 
-add_executable(b25 src/td.c ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+add_executable(b25 src/td.c src/getopt.c ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 set_target_properties(b25 PROPERTIES OUTPUT_NAME ${ARIB25_CMD_NAME})
 target_link_libraries(b25 PRIVATE ${PCSC_LIBRARIES})
 target_link_libraries(b25 PRIVATE arib25-shared)
