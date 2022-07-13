@@ -28,23 +28,31 @@
 extern "C" {
 #endif
 
-int getopt(int, char * const [], const char *);
-extern char *optarg;
+#if defined(_WIN32)
+#include <tchar.h>
+#else
+#define TCHAR char
+#endif
+
+int getopt(int, TCHAR * const [], const TCHAR *);
+extern TCHAR *optarg;
 extern int optind, opterr, optopt, optreset;
 
 struct option {
-	const char *name;
+	const TCHAR *name;
 	int has_arg;
 	int *flag;
 	int val;
 };
 
-int getopt_long(int, char *const *, const char *, const struct option *, int *);
-int getopt_long_only(int, char *const *, const char *, const struct option *, int *);
+int getopt_long(int, TCHAR *const *, const TCHAR *, const struct option *, int *);
+int getopt_long_only(int, TCHAR *const *, const TCHAR *, const struct option *, int *);
 
 #define no_argument        0
 #define required_argument  1
 #define optional_argument  2
+
+#undef TCHAR
 
 #ifdef __cplusplus
 }

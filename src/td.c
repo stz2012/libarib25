@@ -103,8 +103,8 @@ static void show_usage()
 static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 {
 	static struct option longopts[] = {
-		{"help", no_argument, NULL, 'h'},
-		{"version", no_argument, NULL, 'V'},
+		{_T("help"), no_argument, NULL, 'h'},
+		{_T("version"), no_argument, NULL, 'V'},
 		{NULL, 0, NULL, 0}
 	};
 	
@@ -114,7 +114,7 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 	dst->power_ctrl = 1;
 	dst->verbose = 1;
 
-	while (getopt_long(argc, argv, "m:p:r:s:v:hV", longopts, NULL) != -1) {
+	while (getopt_long(argc, argv, _T("m:p:r:s:v:hV"), longopts, NULL) != -1) {
 		switch (optopt) {
 			case 'm':
 				dst->emm = _ttoi(optarg);

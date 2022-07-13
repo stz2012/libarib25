@@ -3,27 +3,30 @@
 #include <string.h>
 #include "getopt.h"
 
-char *optarg;
+#if !defined(_WIN32)
+#define TCHAR char
+#define _T(X) X
+#define _ftprintf fprintf
+#define _tcslen strlen
+#endif
+
+int getopt(int, TCHAR * const[], const TCHAR *);
+
+TCHAR *optarg;
 int optind=1, opterr=1, optopt, __optpos, optreset=0;
 
 #define optpos __optpos
 
-static void __getopt_msg(const char *a, const char *b, const char *c, size_t l)
+static void __getopt_msg(const TCHAR *a, const TCHAR *b, const TCHAR *c, size_t l)
 {
-	FILE *f = stderr;
-	flockfile(f);
-	fputs(a, f)>=0
-	&& fwrite(b, strlen(b), 1, f)
-	&& fwrite(c, 1, l, f)==l
-	&& putc('\n', f);
-	funlockfile(f);
+	_ftprintf(stderr, _T("%s%s%s\n"), a, b, c);
 }
 
-int getopt(int argc, char * const argv[], const char *optstring)
+int getopt(int argc, TCHAR * const argv[], const TCHAR *optstring)
 {
 	int i, c, d;
 	int k, l;
-	char *optchar;
+	TCHAR *optchar;
 
 	if (!optind || optreset) {
 		optreset = 0;
@@ -71,7 +74,7 @@ int getopt(int argc, char * const argv[], const char *optstring)
 
 	if (d != c) {
 		if (optstring[0] != ':' && opterr)
-			__getopt_msg(argv[0], ": unrecognized option: ", optchar, k);
+			__getopt_msg(argv[0], _T(": unrecognized option: "), optchar, k);
 		return '?';
 	}
 	if (optstring[i] == ':') {
@@ -79,7 +82,7 @@ int getopt(int argc, char * const argv[], const char *optstring)
 		else if (optind >= argc) {
 			if (optstring[0] == ':') return ':';
 			if (opterr) __getopt_msg(argv[0],
-				": option requires an argument: ",
+				_T(": option requires an argument: "),
 				optchar, k);
 			return '?';
 		}
@@ -91,7 +94,7 @@ int getopt(int argc, char * const argv[], const char *optstring)
 	return c;
 }
 
-static void permute(char *const *argv, int dest, int src)
+static void permute(TCHAR *const *argv, int dest, int src)
 {
 	char **av = (char **)argv;
 	char *tmp = av[src];
@@ -101,7 +104,7 @@ static void permute(char *const *argv, int dest, int src)
 	av[dest] = tmp;
 }
 
-static int __getopt_long_core(int argc, char *const *argv, const char *optstring, const struct option *longopts, int *idx, int longonly)
+int __getopt_long_core(int argc, TCHAR *const *argv, const TCHAR *optstring, const struct option *longopts, int *idx, int longonly)
 {
 	optarg = 0;
 	if (longopts && argv[optind][0] == '-' &&
@@ -110,9 +113,9 @@ static int __getopt_long_core(int argc, char *const *argv, const char *optstring
 	{
 		int colon = optstring[optstring[0]=='+'||optstring[0]=='-']==':';
 		int i, cnt, match;
-		char *opt;
+		TCHAR *opt;
 		for (cnt=i=0; longopts[i].name; i++) {
-			const char *name = longopts[i].name;
+			const TCHAR *name = longopts[i].name;
 			opt = argv[optind]+1;
 			if (*opt == '-') opt++;
 			for (; *name && *name == *opt; name++, opt++);
@@ -133,9 +136,9 @@ static int __getopt_long_core(int argc, char *const *argv, const char *optstring
 					if (colon || !opterr)
 						return '?';
 					__getopt_msg(argv[0],
-						": option does not take an argument: ",
+						_T(": option does not take an argument: "),
 						longopts[i].name,
-						strlen(longopts[i].name));
+						_tcslen(longopts[i].name) * sizeof (TCHAR));
 					return '?';
 				}
 				optarg = opt+1;
@@ -144,9 +147,9 @@ static int __getopt_long_core(int argc, char *const *argv, const char *optstring
 					if (colon) return ':';
 					if (!opterr) return '?';
 					__getopt_msg(argv[0],
-						": option requires an argument: ",
+						_T(": option requires an argument: "),
 						longopts[i].name,
-						strlen(longopts[i].name));
+						_tcslen(longopts[i].name) * sizeof (TCHAR));
 					return '?';
 				}
 				optind++;
@@ -161,10 +164,10 @@ static int __getopt_long_core(int argc, char *const *argv, const char *optstring
 		if (argv[optind][1] == '-') {
 			if (!colon && opterr)
 				__getopt_msg(argv[0], cnt ?
-					": option is ambiguous: " :
-					": unrecognized option: ",
+					_T(": option is ambiguous: ") :
+					_T(": unrecognized option: "),
 					argv[optind]+2,
-					strlen(argv[optind]+2));
+					_tcslen(argv[optind]+2) * sizeof (TCHAR));
 			optind++;
 			return '?';
 		}
@@ -172,7 +175,7 @@ static int __getopt_long_core(int argc, char *const *argv, const char *optstring
 	return getopt(argc, argv, optstring);
 }
 
-static int __getopt_long(int argc, char *const *argv, const char *optstring, const struct option *longopts, int *idx, int longonly)
+static int __getopt_long(int argc, TCHAR *const *argv, const TCHAR *optstring, const struct option *longopts, int *idx, int longonly)
 {
 	int ret, skipped, resumed;
 	if (!optind || optreset) {
@@ -201,12 +204,12 @@ static int __getopt_long(int argc, char *const *argv, const char *optstring, con
 	return ret;
 }
 
-int getopt_long(int argc, char *const *argv, const char *optstring, const struct option *longopts, int *idx)
+int getopt_long(int argc, TCHAR *const *argv, const TCHAR *optstring, const struct option *longopts, int *idx)
 {
 	return __getopt_long(argc, argv, optstring, longopts, idx, 0);
 }
 
-int getopt_long_only(int argc, char *const *argv, const char *optstring, const struct option *longopts, int *idx)
+int getopt_long_only(int argc, TCHAR *const *argv, const TCHAR *optstring, const struct option *longopts, int *idx)
 {
 	return __getopt_long(argc, argv, optstring, longopts, idx, 1);
 }
