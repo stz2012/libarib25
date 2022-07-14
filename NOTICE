@@ -6,3 +6,9 @@ This product include software from MARUMO Manufacturing libarib25 project.
   * Copyright (c)2007-2012 MOGI, Kazuhiro <kazhiro@marumo.ne.jp>; All rights reserved.
      MARUMO Manufacturing (https://www.marumo.ne.jp/) 
      Special Thanks: 2ch NoNames, eternalharvest, eru.
+
+This product include code derived from musl project.
+  * Copyright 2005-2014 Rich Felker, et al.
+     Files:
+       - src/getopt.h
+       - src/getopt.c

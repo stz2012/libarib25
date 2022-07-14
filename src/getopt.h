@@ -1,5 +1,8 @@
 /*
   Copyright 2005-2014 Rich Felker, et al.
+
+  This code is derived from software contributed to musl project
+  by Rich Felker.
   
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
