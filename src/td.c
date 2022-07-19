@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <config.h>
+#include "getopt.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -92,12 +93,20 @@ static void show_usage()
 	_ftprintf(stderr, _T("  -v verbose\n"));
 	_ftprintf(stderr, _T("     0: silent\n"));
 	_ftprintf(stderr, _T("     1: show processing status (default)\n"));
+	_ftprintf(stderr, _T("  -V, --version\n"));
+	_ftprintf(stderr, _T("     show version\n"));
+	_ftprintf(stderr, _T("  -h, --help\n"));
+	_ftprintf(stderr, _T("     show this help message\n"));
 	_ftprintf(stderr, _T("\n"));
 }
 
 static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 {
-	int i;
+	static struct option longopts[] = {
+		{_T("help"), no_argument, NULL, 'h'},
+		{_T("version"), no_argument, NULL, 'V'},
+		{NULL, 0, NULL, 0}
+	};
 	
 	dst->round = 4;
 	dst->strip = 0;
@@ -105,58 +114,47 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 	dst->power_ctrl = 1;
 	dst->verbose = 1;
 
-	for(i=1;i<argc;i++){
-		if(argv[i][0] != '-'){
-			break;
-		}
-		switch(argv[i][1]){
-		case 'm':
-			if(argv[i][2]){
-				dst->emm = _ttoi(argv[i]+2);
-			}else{
-				dst->emm = _ttoi(argv[i+1]);
-				i += 1;
-			}
-			break;
-		case 'p':
-			if(argv[i][2]){
-				dst->power_ctrl = _ttoi(argv[i]+2);
-			}else{
-				dst->power_ctrl = _ttoi(argv[i+1]);
-				i += 1;
-			}
-			break;
-		case 'r':
-			if(argv[i][2]){
-				dst->round = _ttoi(argv[i]+2);
-			}else{
-				dst->round = _ttoi(argv[i+1]);
-				i += 1;
-			}
-			break;
-		case 's':
-			if(argv[i][2]){
-				dst->strip = _ttoi(argv[i]+2);
-			}else{
-				dst->strip = _ttoi(argv[i+1]);
-				i += 1;
-			}
-			break;
-		case 'v':
-			if(argv[i][2]){
-				dst->verbose = _ttoi(argv[i]+2);
-			}else{
-				dst->verbose = _ttoi(argv[i+1]);
-				i += 1;
-			}
-			break;
-		default:
-			_ftprintf(stderr, _T("error - unknown option '-%c'\n"), argv[i][1]);
-			return argc;
+	while (getopt_long(argc, argv, _T("m:p:r:s:v:hV"), longopts, NULL) != -1) {
+		switch (optopt) {
+			case 'm':
+				dst->emm = _ttoi(optarg);
+				break;
+
+			case 'p':
+				dst->power_ctrl = _ttoi(optarg);
+				break;
+
+			case 'r':
+				dst->round = _ttoi(optarg);
+				break;
+
+			case 's':
+				dst->strip = _ttoi(optarg);
+				break;
+
+			case 'v':
+				dst->verbose = _ttoi(optarg);
+				break;
+
+			case 'h':
+				show_usage();
+				exit(EXIT_SUCCESS);
+				break;
+
+			case 'V':
+				_ftprintf(stderr, _T("%s\n"), _T(BUILD_GIT_REVISION));
+				exit(EXIT_SUCCESS);
+				break;
+
+
+			default:
+				optopt && _ftprintf(stderr, _T("%s: unrecognized option: %c\n"), argv[0], optopt);
+				exit(EXIT_FAILURE);
+				break;
 		}
 	}
 
-	return i;
+	return optind;
 }
 
 static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
