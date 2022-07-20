@@ -1,375 +1,220 @@
+# libarib25 (STZ版)
+
 [![Build Status](https://travis-ci.org/stz2012/libarib25.svg?branch=master)](https://travis-ci.org/stz2012/libarib25)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/stz2012/libarib25?branch=master&svg=true)](https://ci.appveyor.com/project/stz2012/libarib25)
-<pre>
-【名称】
 
-　ARIB STD-B25 仕様確認テストプログラムソースコード
 
-【バージョン】
+## STZ版について
+オリジナルのコードは、茂木 和洋 (MOGI, Kazuhiro) 氏によって「ARIB STD-B25 仕様確認テストプログラムソースコード」という名称で Windows 向けに開発され VisualStudio（Visual C++）をターゲットに開発されました。
 
-　0.2.5
+後に、有志の手により `libarib25` として Linux でビルド可能なパッチが書かれ、同時期に複数の無名の開発者により 2ch 等で公開されましたが、その後時間の経過とともに機能改善が散逸的に行われていったため、パッチをかき集めないとビルドするのが難しい状態となっていました。
 
-【作者】
+このソフトウェアは、これらの無名の開発者の成果を Github のリポジトリにまとめ上げたものがベースとなっています。
 
-　茂木 和洋 (MOGI, Kazuhiro) 
-　kazhiro@marumo.ne.jp
+Linux に移植された `libarib25` ですが、元々 Windows 上の VisualStudio で書かれたコードであるため、Windows でも同一のコードベースにより DLL ファイル等をビルドできるようにするため、ビルドシステムを CMake に移行し、再度 Windows をサポート。macOS X のサポートや、Raspberry Pi 等の ARM 環境のサポート。オプションで Intel の AVX2, ARM の NEON 等 SIMD による MULTI2 復号処理に対応するなどより幅広い環境をサポートするよう改良が加えられています。
+
+また、ライセンスが不明瞭であったことによる不便さを解消する目的でコミュニティの同意のもと [Apache License 2.0](LICENSE) に移行していますが、オリジナルの作者である 茂木 和洋 氏はじめ無名の有志の方々の著作権は消失していないことにご留意下さい。詳しくは、[NOTICE](NOTICE) ファイルを参照下さい。また [免責事項](#免責事項) もあわせて参照してください。
+
+## ビルド方法
+
+### Linux
+
+#### 依存関係のインストール
+事前にビルドに必要な開発環境及びライブラリをインストールします。
+
+##### <u>Ubuntu</u>
+```sh
+sudo apt-get install build-essential pkg-config git cmake libpcsclite-dev
+```
+
+##### <u>Redhat</u>
+```sh
+sudo dnf install "@Development tools" gcc-c++ cmake pcsc-lite-devel
+```
+
+#### ソースコードの取得とビルド
+ソースコードを GitHub から取得します。
+```sj
+git clone https://github.com/stz2012/libarib25.git
+cd libarib25
+```
 
-【一次配布元】
+ビルド用のディレクトリを作成し`cmake` コマンドを実行しビルドに必要なコンフィグファイルを生成します。この際、`cmake` コマンドにオプションとしてビルドオプションを指定することができます。詳細は [ビルドオプション](#ビルドオプション) の項を参照してください。何も指定しない場合デフォルトの設定でコンフィグファイルを生成します。
 
-　http://www.marumo.ne.jp/db2012_2.htm#13 又は
+`cmake` コマンドを実行するフォルダは build 以外の任意の名前で構いません。ビルドオプションを変えて異なるバイナリを生成したい場合等には、別の名前のフォルダを作っておくと異なる設定でのビルドを互いに影響を及ぼすことなく独立して管理できます。
 
-　あるいは
+```sh
+mkdir build
+cd build
 
-　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.5.lzh
+cmake ..
+```
+
+正常にコンフィグファイルが生成されると、デフォルトでは GNU make 用の Makefile が同時に生成されます。下記のように `make` コマンドを実行するとビルドが始まります。
+
+```sh
+make
+```
 
-【目的】
+ビルドが正常に完了すると `libarib25.so` と `b25` コマンドが生成されるので、システムにこれらのライブラリや実行ファイル、ヘッダーファイル一式をインストールするには、下記のように管理者権限で `make install` を実行してください。
 
-　ARIB STD-B25 の仕様を理解する為の、参考用の実装として公開
+```sh
+sudo make install
+```
 
-【背景】
+下記のように `b25` コマンドを実行しヘルプメッセージが表示されれば正常にインストールが完了しています。
 
-　2011 年 7 月の地上アナログ放送停波を控え、廉価な地上デジタル放送
-　受信機の販売が待たれている
+```sh
+b25
+```
+```
+b25 - ARIB STD-B25 test program version stz-0.2.5 (v0.2.5-20190204-20-gbfc502d)
+  built with GNU 9.4.0 on Linux-5.10.76-linuxkit
+usage: b25 [options] src.m2t dst.m2t [more pair ..]
+options:
+  -r round (integer, default=4)
+  -s strip
+     0: keep null(padding) stream (default)
+     1: strip null stream
+  -m EMM
+     0: ignore EMM (default)
+     1: send EMM to B-CAS card
+  -p power_on_control_info
+     0: do nothing additionally
+     1: show B-CAS EMM receiving request (default)
+  -v verbose
+     0: silent
+     1: show processing status (default)
+  -V, --version
+     show version
+  -h, --help
+     show this help message
+```
 
-　しかし、ARIB の標準文書はわざと判りにくく書いて開発費をかさませ
-　ようとしているとしか思えないほどに意味不明瞭な記述になっており
-　このままでは低価格受信機の開発など不可能に思える
+### Windows
+### VisualStudio
+#### 依存関係のインストール
+##### <u>VisualStudio 2019 以上の場合</u>
+* [VisualStudio 2022](https://visualstudio.microsoft.com/ja/downloads/)  
+ワークロードから 「C++ によるデスクトップ開発」を選択してインストールします。
 
-　そこで、自分なりに ARIB 標準文書を読み、理解した範囲をソース
-　コードの形にまとめて公開することにした
+##### <u>VisualStudio 2017 以前の場合</u>
+VisualStudio 2017 以前では、VisualStudio の他に Git for Windows を手動でインストール必要があります。
 
-　このコードが安価な受信機の開発の一助となることを期待する
+* VisualStudio 2017  
+ワークロードから 「C++ によるデスクトップ開発」を選択してインストールします。
 
-　なお、あくまでも仕様理解を目的としたものであるため、ビルド済み
-　バイナリファイルは配布しない
+* [Git for Windows](https://gitforwindows.org/)  
+上記リンクより Git for Windows をダウンロードしインストールします。
 
-【実装した範囲】
+##### <u>VisualStudio 2015 以前の場合</u>
+VisualStudio 2015 以前の場合 CMake が統合されていないため、Git for Windows に加えて CMake もインストールする必要があります。
+* VisualStudio  
+ワークロードから 「C++ によるデスクトップ開発」を選択してインストールします。
+* [Git for Windows](https://gitforwindows.org/)  
+上記リンクより Git for Windows をダウンロードしインストールします。
+* [CMake](https://cmake.org/download/)  
+上記リンクより最新の Windows 版 (msi) パッケージをダウンロードしインストールします。
 
-　CA システム (B-CAS カード関連) を中心に ECM(table_id=0x82) の処理と
-　ストリーム暗号の復号処理、EMM(table_id=0x84) の処理までを実装した
+#### ソースコードの取得
+##### <u>VisualStudio 2019 以上の場合</u>
+VisualStudio を起動後のスタート画面右側「開始する」から「リポジトリのクローン」を選択し、リポジトリの場所に Github のリポジトリ URL を入力するとソースコードを取得することができます。
 
-　EMM メッセージ (table_id=0x85) 関連は未実装となっている
+##### <u>VisualStudio 2017 以前の場合</u>
+Git for Windows の bash シェルを起動し、Github のリポジトリを手動でクローンします。
 
-【プログラムの動作環境】
+```sh
+mkdir -p ~/source/repos/
+cd ~/source/repos
 
-　ISO 7816 対応の IC カードリーダがインストールされた Windows PC を
-　想定動作環境とする
+git clone https://github.com/stz2012/libarib25.git
+```
 
-　ISO 7816 対応スマートカードリーダーは一般に
-　「住基カード対応 IC カードリーダ」「e-Tax 対応 IC カードリーダ」
-　などとして 4000 円程度で販売されているものが利用可能である
+#### ソースコードのビルド
+##### <u>VisualStudio 2019 以上の場合</u>
+VisualStudio ビルトイン機能でクローンした場合は、右側のソリューションエクスプローラから「フォルダービュー」をダブルクリックするとプロジェクトを開くことができます。VisualStudio に統合された CMake により自動でビルドに必要な設定ファイルが生成されるので「ビルド」メニューより「全てビルド」を選択することでビルドすることができます。
 
-　日立マクセル製の HX-520UJJ と NTT コミュニケーションズの SCR3310 
-　で正常に動作することを確認している
+##### <u>VisualStudio 2017</u>
+VisualStudio 2017 の場合は、VisualStudio 起動後「ファイル」メニューから「開く」→「フォルダ」を選択し、ソースコードの取得でクローンしたフォルダを選択し開きます。VisualStudio 2017 では CMake が統合されているため、フォルダを開いた後 VisualStudio 2019 以上と同様に CMake により自動で設定ファイルが構成されます。「ビルド」メニューより「全てビルド」を選択しビルドしてください。
 
-【ソースコードのライセンスについて】
+##### <u>VisualStudio 2015 以前</u>
+VisualStudio 2015 以前の場合は、CMake が統合されておらず手動で VisualStudio のソリューションファイルを生成する必要があります。
 
-　・ソースコードを利用したことによって、特許上のトラブルが発生しても
-　　茂木 和洋は責任を負わない
-　・ソースコードを利用したことによって、プログラムに問題が発生しても
-　　茂木 和洋は責任を負わない
+CMake GUI を起動します
 
-　上記 2 条件に同意して作成された二次的著作物に対して、茂木 和洋は
-　原著作者に与えられる諸権利を行使しない
+1. 「where is the source code」欄右側の「Browse source...」ボタンを選択し、ソースコードの取得でクローンしたパスを指定します
+2. 「where to build the binaries」欄にソリューションファイルの生成するディレクトリを指定します  
+1 の手順で指定したディレクトリの配下に build 等の名前でディレクトリを生成し指定することを推奨しますが、1 で指定したパスと同じでも構いません。
+3. 「Configure」ボタンを押す  
+「CMakeSetup」画面が表示されるので、「Specify the generator for this project」欄より該当する VisualStudio のバージョンを選択し「Finish」ボタンを押します。  
+正常に完了すると CMake GUI の下部ログ画面に「Configure done」と表示されます。
+4. 「Generate」ボタンを押して VisualStudio のソリューションファイルを生成します。
 
-【プログラムの構成】
+手順 2 で指定したディレクトリにソリューションファイル (.sln) ファイルが生成されているので、VisualStudio で開きます。「ビルド」メニューより「ソリューションのビルド」を選択することでビルドすることができます。
 
-　・arib_std_b25.h/c
+## ビルドオプション
 
-　　ARIB STD-B25 記載の処理を行うためのモジュール
-　　MPEG-2 TS の分離、CA システム (B-CAS カード) 機能の呼び出し、
-　　MULTI2 復号機能の呼び出し等を担当する
+### コンパイラの指定
+既定では CMake によりシステムにインストールされているコンパイラが自動で検出されます。クロスコンパイルをしたい場合や、何らかの理由で別のコンパイラを使用したい場合には下記のように指定することで使用するコンパイラを変えることができます。
 
-　・ts_section_parser.h/c
+例) コンパイラとして `clang` を使用する場合
 
-　　MPEG-2 TS のセクション形式データの分割処理を担当する
+```sh
+cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang ..
+```
 
-　・b_cas_card.h/c
+### PC/SC ライブラリの指定
+既定では各 OS における PC/SC の API やライブラリを自動で検出しリンクします。Linux では `libpcsclite`、Windows では `WinSCard` (winscard.dll)、macOS X では `winscard` にリンクされます。
 
-　　CA システム (B-CAS カード) のリソース管理および直接の制御を
-　　担当する
+| Option            | Default     |
+| ----------------- | ----------- |
+| WITH_PCSC_PACKAGE | libpcsclite |
+| WITH_PCSC_LIBRARY |             |
 
-　・multi2.h/c
+`WITH_PCSC_PACKAGE` に pkg-config が認識するパッケージ名を入力すると、自動でインクルードパスの設定及びリンクを行うように構成します。このオプションを使用することで、PC/SC 互換のサードパーティライブラリとリンクすることができます。ただし、この方法は pkg-config 用設定ファイル（拡張子 .pc）のファイルが提供されていること、pkg-config のインクルードパス以外に展開サれている場合は環境変数 `PKG_CONFIG_PATH` を事前に通しておく必要があります。
 
-　　MULTI2 暗号の符号化と復号を担当する
+例) `libpcscmod` という名前の PC/SC 互換ライブラリとリンクする場合。
 
-　・td.c
+```sh
+PKG_CONFIG_PATH=/usr/local/lib/pkgconfig  cmake -D WITH_PCSC_PACKAGE=libpcscmod ..
+```
 
-　　テストドライバ
-　　PAT/PMT/ECM を含む MPEG-2 TS ファイルを読み込み、復号後の
-　　MPEG-2 TS ファイルを出力する
+サードパーティのライブラリが pkg-config 形式の設定ファイルを提供していない場合は、ライブラリ名を入力することでシステムから探索し自動でリンクするように構成します。ただし、事前にシステムに libpcsclite パッケージがインストールされていると優先的に `WITH_PCSC_PACKAGE` で指定された pkg-config 形式のライブラリ設定が読み込まれるためこれを無効にする必要があります。
 
-　　コマンドラインオプションで MULTI2 暗号のラウンド数を指定可能
-　　ラウンド数を指定しない場合の初期値は 4
+例) `pkg-config` がデフォルトで検出する `libpcsclite` を無効化し `libpcscmod` にリンクする場合。
+```
+cmake -DWITH_PCSC_PACKAGE=NO -DWITH_PCSC_LIBRARY=pcscmod ..
+```
 
-　　このラウンド数 4 は MULTI2 用語では 32 に相当する
+一般的なディレクトリ以外にインストールされたライブラリの場合自動で検出されます。クロスコンパイル等で特殊なディレクトリを参照させたい場合は `CMAKE_FIND_ROOT_PATH` を指定する必要があるかもしれません。
 
-　　ARIB STD-B25 では MULTI2 のラウンド数は非公開パラメータだが
-　　総当たりで実際のラウンド数は推定可能である
 
-【処理の流れ】
+### オプション機能
+#### UNICODE 対応（Windows のみ）
+デフォルトで ON になっています。コマンドラインで日本語を含むファイルパスを指定する場合、UNICODE 対応を ON の状態でビルドする必要があります。無効化するメリットはありませんが、何らかの理由で無効化したい場合は `-DUSE_UNICODE=OFF` と指定してビルドすることができます。
 
-　・起動時
+| Option      | Default |
+| ----------- | ------- |
+| USE_UNICODE | ON      |
 
-　　1 アプリケーションは B_CAS_CARD モジュールのインスタンスを
-　　　作成し、B_CAS_CARD モジュールに、初期化を依頼する
 
-　　1.a B_CAS_CARD モジュールは WIN32 API のスマートカード関連
-　　　　API を呼び出し、CA システムに接続する
-　　1.b B_CAS_CARD モジュールは ARIB STD-B25 記載の「初期条件
-　　　　設定コマンドを CA システムに発行し、システム鍵 (64 byte)
-　　　　初期 CBC 状態 (8 byte) を受け取る 
+#### SIMD 対応
+それぞれ `-DUSE_AVX2=ON`, `-DUSE_NEON=ON` とすることで有効化できます。NEON については、Windows 以外の ARM CPU (現時点では リトルエンディアンにのみ対応)。
 
-　　2 アプリケーションは ARIB_STD_B25 モジュールのインスタンスを
-　　　作成し、B_CAS_CARD モジュールを ARIB_STD_B25 モジュールに
-　　　登録する
+| Option      | Default |                 |
+| ----------- | ------- |-----------------|
+| USE_AVX2    | OFF     |                 |
+| USE_NEON    | OFF     | Windows は未対応 |
 
-　・データ処理時
+ARM CPU は、バイエンディアンですが Raspberry Pi 等の既定ではリトルエンディアンとなっているはずなので多くの場合問題にはなりません。ビッグエンディアン環境で NEON を有効化しビルドしようとするとエラーになります。
 
-　　1 アプリケーションは ARIB_STD_B25 モジュールに順次データを
-　　　提供し、ARIB_STD_B25 モジュールから処理完了データを受け
-　　　取ってファイルに出力していく
+## 免責事項
+本ソフトウェアは現状有姿で提供され、明示であるか暗黙であるかを問わずいかなる保証も致しません。ここでいう保証とは、商品性、特定の目的への適合性、および権利非侵害についての保証も含みますが、それに限定されるものではありません。作者または著作権者は、契約行為、不法行為、またはそれ以外であろうと、ソフトウェアに起因または関連し、あるいはソフトウェアの使用またはその他の扱いによって生じる一切の請求、損害、その他の義務について何らの責任も負わないものとします。
 
-　　・ARIB_STD_B25 モジュール内
+## ライセンス
+このソフトウェアは [Apache License 2.0](LICENSE) の下で提供されます。
 
-　　　1 TS パケットのユニットサイズ (188/192/204 などが一般的) が
-　　　　特定されていない場合 8K まで入力データをバッファしてから、
-　　　　ユニットサイズを特定する
-　　　　ユニットサイズが特定できなかった場合は、エラー終了する
-
-　　　2 PAT が発見されていない場合、PAT が発見できるまで入力
-　　　　データをバッファし続ける
-　　　　PAT が発見できずにバッファサイズが 16M を超過した場合
-　　　　エラー終了する
-　　　　PAT が発見できた場合、プログラム配列を作成し PID マップ
-　　　　配列に登録する
-
-　　　3 PAT に登録されていた PMT すべてが発見されるか、どれか
-　　　　ひとつの PMT で 2 個目のセクションが到着するまで入力
-　　　　データをバッファし続ける
-　　　　上記条件を満たさずにバッファサイズが 32M を超過した場合
-　　　　エラー終了する
-　　　　PMT が到着する毎に ECM の有無を確認し、ECM が存在する
-　　　　場合はデクリプタを作成してプログラムに所属するストリーム
-　　　　と PID マップ上で関連付ける
-
-　　　4 PMT に登録されていた ECM すべてが発見されるか、どれか
-　　　　ひとつの ECM で 2 個目のセクションが到着するまで入力
-　　　　データをバッファし続ける
-　　　　上記条件を満たさずにバッファサイズが 32M を超過した場合
-　　　　エラー終了する
-　　　　各 ECM に対して、最初のセクションデータが到着した時点で
-　　　　MULTI2 モジュールのインスタンスをデクリプタ上に作成する
-　　　　ECM セクションデータは B_CAS_CARD モジュールに提供して
-　　　　スクランブル鍵を受け取り、MULTI2 モジュールにシステム鍵、
-　　　　初期 CBC 状態、スクランブル鍵を渡し、MULTI2 復号の準備を
-　　　　行う
-
-　　　5.a 暗号化されている TS パケットであれば、PID から対応
-　　　　　ECM ストリームを特定し、デクリプタの MULTI2 モジュー
-　　　　　ルに復号させて出力バッファに積む
-　　　　
-　　　5.b 暗号化されていない TS パケットであれば、そのまま出力
-　　　　　バッファに積む
-
-　　　5.c CAT を検出した場合、EMM の PID を取得して EMM の処理
-　　　　　準備を行う
-
-　　　5.d EMM を受け取った場合、B-CAS カード ID と比較し、自分
-　　　　　宛ての EMM であれば B-CAS カードに引き渡して処理させる
-　　　　　# EMM 処理オプションが指定されている場合
-
-　　　6 ECM が更新された場合、B_CAS_CARD モジュールに処理を
-　　　　依頼し、出力されたスクランブル鍵を MULTI2 モジュールに
-　　　　登録する
-
-　　　7 PMT が更新された場合、ECM PID が変化していれば新たに
-　　　　デクリプタを作成して 4 に戻る
-
-　　　8 PAT が更新された場合、プログラム配列を破棄して
-　　　　3 に戻る
-
-　・終了時
-
-　　1 各モジュールが確保したリソースを解放する
-
-【更新履歴】
-
-　・2012, 2/13 - ver. 0.2.5
-
-　　WOWOW でノンスクランブル <-> スクランブル切り替え後に復号が
-　　行われないことがあるバグを修正
-
-　　http://www.marumo.ne.jp/db2012_2.htm#13 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.5.lzh
-
-　・2009, 4/19 - ver. 0.2.4
-
-　　終端パケットが野良パケット (PMT に記載されていない PID の
-　　パケット) だった場合に、ECM が 1 つだけでも復号が行われない
-　　バグを修正
-
-　　transport_error_indicator が立っている場合はパケット処理を
-　　行わず、そのまま素通しするように変更
-
-　　http://www.marumo.ne.jp/db2009_4.htm#19 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.4.lzh
-
-　・2008, 12/30 - ver. 0.2.3
-
-　　CA_descriptor の解釈を行う際に CA_system_id が B-CAS カード
-　　から取得したものと一致するか確認を行うように変更
-
-　　http://www.marumo.ne.jp/db2008_c.htm#30 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.3.lzh
-
-　・2008, 11/10 - ver. 0.2.2
-
-　　修正ユリウス日から年月日への変換処理をより正確なものへ変更
-
-　　TS パケットサイズの特定方法を変更
-
-　　http://www.marumo.ne.jp/db2008_b.htm#10 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.2.lzh
-
-　・2008, 4/9 - ver. 0.2.1
-
-　　PAT 更新時に復号漏れが発生していたバグを修正
-　　(ver. 0.2.0 でのエンバグ)
-
-　　野良 PID (PMT に記載されていないストリーム) が存在した場合
-　　TS 内の ECM がひとつだけならば、その ECM で復号する形に変更
-
-　　EMM の B-CAS カードへの送信をオプションで選択可能に変更 (-m)
-　　進捗状況の表示をオプションで選択可能に変更 (-v)
-　　通電制御情報 (EMM受信用) を表示するオプションを追加 (-p)
-
-　　http://www.marumo.ne.jp/db2008_4.htm#9 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.1.lzh
-
-　・2008, 4/6 - ver. 0.2.0
-
-　　EMM 対応
-　　利用中の B-CAS カード ID 向けの EMM を検出した場合、EMM を
-　　B-CAS カードに渡す処理を追加
-
-　　ECM 処理の際に未契約応答が返された場合、処理負荷軽減の為、
-　　以降、その PID の ECM を B-CAS カードで処理しないように変
-　　更 (EMM を処理した場合は再び ECM を処理するように戻す)
-
-　　進捗を nn.nn% の書式で標準エラー出力に表示するように変更
-　　
-　　http://www.marumo.ne.jp/db2008_4.htm#6 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.2.0.lzh
-
-　・2008, 3/31 - ver. 0.1.9
-
-　　MULTI2 モジュールのインスタンスが未作製の状況で、MULTI2 の
-　　機能を呼び出して例外を発生させることがあったバグを修正
-
-　　# パッチを提供してくれた方に感謝
-
-　　http://www.marumo.ne.jp/db2008_3.htm#31 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.9.lzh
-
-　・2008, 3/24 - ver. 0.1.8
-
-　　-s オプション (NULL パケットの削除) を追加
-　　-s 1 で NULL パケットを出力ファイルには保存しなくなる
-　　デフォルトは -s 0 の NULL パケット保持
-
-　　http://www.marumo.ne.jp/db2008_3.htm#24 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.8.lzh
-
-　・2008, 3/17 - ver. 0.1.7
-
-　　arib_std_b25.h に「extern "C" {」を閉じるコードがなかった問題 
-　　(C++ コードから利用する場合にコンパイルエラーを発生させる) を
-　　修正
-
-　　TS パケットの中途でストリームが切り替わるケースで問題が発生し
-　　にくくなるように、arib_std_b25.c 内のコードを修正
-
-　　http://www.marumo.ne.jp/db2008_3.htm#17 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.7.lzh
-
-　・2008, 3/16 - ver. 0.1.6
-
-　　PMT 更新の際、ECM 関連の状況が変更 (スクランブル - ノンスク
-　　ランブルの切り替えや、ECM PID の変更等) が行われても、それが
-　　反映されていなかった問題を修正
-
-　　http://www.marumo.ne.jp/db2008_3.htm#16 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.6.lzh
-
-　・2008, 2/14
-
-　　readme.txt (このファイル) を修正
-　　ソースコードのライセンスについての記述を追加
-
-　・2008, 2/12 - ver. 0.1.5
-
-　　PMT の更新に伴い、どのプログラムにも所属しなくなった PID (スト
-　　リーム) でパケットが送信され続けた場合、そのパケットの復号が
-　　できなくなっていた問題を修正
-
-　　http://www.marumo.ne.jp/db2008_2.htm#12 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.5.lzh
-
-　・2008, 2/2 - ver. 0.1.4
-
-　　ver. 0.1.3 での PMT 処理方法変更に問題があり、PMT が更新された
-　　場合、それ以降で正常な処理が行えなくなっていたバグを修正
-
-　　B-CAS カードとの通信でエラーが発生した場合のリトライ処理が機能
-　　していなかったバグを修正
-
-　　http://www.marumo.ne.jp/db2008_2.htm#2 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.4.lzh
-
-　・2008, 2/1 - ver. 0.1.3
-
-　　有料放送等で未契約状態の B-CAS カードを使った際に、鍵が取得で
-　　きていないにもかかわらず、間違った鍵で復号をしていた問題に対処
-
-　　鍵が取得できなかった ECM に関連付けられたストリームでは復号を
-　　行わず、スクランブルフラグを残したまま入力を素通しする形に変更
-　　鍵が取得できない ECM が存在する場合、終了時にチャネル番号と
-　　B-CAS カードから取得できたエラー番号を警告メッセージとして表示
-　　する形に変更
-
-　　暗号化されていないプログラムで例外を発生させていたバグを修正
-
-　　http://www.marumo.ne.jp/db2008_2.htm#1 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.3.lzh
-
-　・2008, 1/11 - ver. 0.1.2
-
-　　デジタル BS 放送等で、PAT に登録されているのに、ストリーム内で
-　　PMT が一切出現しないことがある場合に対応
-
-　　PMT 内の記述子領域 2 に CA_descriptor が存在する場合に対応する
-　　ため arib_std_b25.c 内部での処理構造を変更
-
-　　別プログラムと同時実行するためにスマートカードの排他制御指定を
-　　変更
-
-　　http://www.marumo.ne.jp/db2008_1.htm#11 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.2.lzh
-
-　・2008, 1/7 - ver. 0.1.1
-
-　　セクション (PAT/PMT/ECM 等) が複数の TS パケットに分割されている
-　　場合に、正常に処理できなかったり、例外を発生をさせることがある
-　　バグを修正
-
-　　http://www.marumo.ne.jp/db2008_1.htm#7 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.1.lzh
-
-　・2007, 11/25 - ver. 0.1.0
-
-　　公開
-
-　　http://www.marumo.ne.jp/db2007_b.htm#25 又は
-　　http://www.marumo.ne.jp/junk/arib_std_b25-0.1.0.lzh
-</pre>
+## 参考
+* 一次配布元  
+㋲製作所 - http://www.marumo.ne.jp/db2012_2.htm#13  
+README（オリジナル）- [README](README.org)
