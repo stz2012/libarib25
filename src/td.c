@@ -364,8 +364,8 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 			_ftprintf(stderr, _T("  undecrypted TS packet: %I64d\n"), pgrm.undecrypted_packet_count);
 			_ftprintf(stderr, _T("  total TS packet:       %I64d\n"), pgrm.total_packet_count);
 			#else
-			_ftprintf(stderr, _T("  undecrypted TS packet: %"PRId64"\n"), pgrm.undecrypted_packet_count);
-			_ftprintf(stderr, _T("  total TS packet:       %"PRId64"\n"), pgrm.total_packet_count);
+			_ftprintf(stderr, _T("  undecrypted TS packet: %" PRId64 "\n"), pgrm.undecrypted_packet_count);
+			_ftprintf(stderr, _T("  total TS packet:       %" PRId64 "\n"), pgrm.total_packet_count);
 			#endif
 		}
 	}
