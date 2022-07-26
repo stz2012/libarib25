@@ -1525,7 +1525,7 @@ static int32_t find_ca_descriptor_pid(uint8_t *head, uint8_t *tail, int32_t ca_s
 	return 0;
 }
 
-static int add_ecm_stream(ARIB_STD_B25_PRIVATE_DATA *prv, TS_STREAM_LIST *list, int32_t ecm_pid)
+static int32_t add_ecm_stream(ARIB_STD_B25_PRIVATE_DATA *prv, TS_STREAM_LIST *list, int32_t ecm_pid)
 {
 	TS_STREAM_ELEM *strm;
 
