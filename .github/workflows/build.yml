@@ -20,7 +20,9 @@ jobs:
       - name: setup
         run: sudo apt-get install build-essential clang cmake cmake-data libpcsclite-dev
       - name: configure
-        run: cmake -B build -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+        run: |
+          cmake --version
+          cmake -B build -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
       - name: build
         run: cmake --build build
       - name: test
@@ -53,7 +55,7 @@ jobs:
       - name: configure
         run: |
           mkdir build
-          docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake ..
+          docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build bash -c 'cmake --version && cmake ..'
       - name: build 
         run: docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake --build .
       - name: test
@@ -70,7 +72,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: configure
-        run: cmake -B build
+        run: |
+          cmake --version
+          cmake -B build
       - name: build
         run: cmake --build build
       - name: test
@@ -87,7 +91,9 @@ jobs:
     steps: 
       - uses: actions/checkout@v3
       - name: configure
-        run: cmake -B build
+        run: |
+          cmake --version
+          cmake -B build
       - name: build
         run: cmake --build build
       - name: test
