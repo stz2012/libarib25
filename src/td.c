@@ -148,7 +148,7 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 
 
 			default:
-				optopt && _ftprintf(stderr, _T("%s: unrecognized option: %c\n"), argv[0], optopt);
+				if (optopt) _ftprintf(stderr, _T("%s: unrecognized option: %c\n"), argv[0], optopt);
 				exit(EXIT_FAILURE);
 				break;
 		}
