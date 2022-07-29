@@ -50,10 +50,10 @@ jobs:
           cache-to: type=gha,scope=${{ matrix.image }},mode=max
           load: true
 
-      - run: mkdir build
-
       - name: configure
-        run: docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake ..
+        run: |
+          mkdir build
+          docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake ..
       - name: build 
         run: docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake --build .
       - name: test
