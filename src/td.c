@@ -21,6 +21,7 @@
 	#define _ttoi atoi
 	#define _tmain main
 	#define _topen _open
+	#define _tcscmp strcmp
 	#include <inttypes.h>
 	#include <unistd.h>
 	#include <sys/time.h>
@@ -79,6 +80,8 @@ static void show_usage()
 	_ftprintf(stderr, _T("b25 - ARIB STD-B25 test program version %s (%s)\n"), _T(PROJECT_DESCRIPTION), _T(BUILD_GIT_REVISION));
 	_ftprintf(stderr, _T("  built with %s %s on %s\n"), _T(BUILD_CC_NAME), _T(BUILD_CC_VERSION), _T(BUILD_OS_NAME));
 	_ftprintf(stderr, _T("usage: b25 [options] src.m2t dst.m2t [more pair ..]\n"));
+	_ftprintf(stderr, _T("  if src.m2t is '-', input stdin.\n"));
+	_ftprintf(stderr, _T("  if dst.m2t is '-', output stdout and set -p 0 -v 0 options.\n"));
 	_ftprintf(stderr, _T("options:\n"));
 	_ftprintf(stderr, _T("  -r round (integer, default=4)\n"));
 	_ftprintf(stderr, _T("  -s strip\n"));
@@ -102,6 +105,8 @@ static void show_usage()
 
 static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 {
+	int n;
+
 	static struct option longopts[] = {
 		{_T("help"), no_argument, NULL, 'h'},
 		{_T("version"), no_argument, NULL, 'V'},
@@ -154,6 +159,16 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 		}
 	}
 
+	n = optind;
+	for(;n<=(argc-2);n+=2){
+		if(_tcscmp(_T("-"), argv[n+1])== 0){
+			/* if output to stdout, don't put messages. */
+			dst->power_ctrl = 0;
+			dst->verbose = 0;
+			break;
+		}
+	}
+
 	return optind;
 }
 
@@ -187,7 +202,17 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 	b25 = NULL;
 	bcas = NULL;
 
-	sfd = _topen(src, _O_BINARY|_O_RDONLY|_O_SEQUENTIAL);
+	if(src && _tcscmp(_T("-"), src)==0){
+#if defined(_WIN32)
+		sfd = _fileno(stdin);
+		setmode(sfd, _O_BINARY);
+#else
+		sfd = STDIN_FILENO;
+#endif
+	}else{
+		sfd = _topen(src, _O_BINARY | _O_RDONLY | _O_SEQUENTIAL);
+	}
+
 	if(sfd < 0){
 		_ftprintf(stderr, _T("error - failed on _open(%s) [src]\n"), src);
 		goto LAST;
@@ -239,7 +264,17 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 		goto LAST;
 	}
 
-	dfd = _topen(dst, _O_BINARY|_O_WRONLY|_O_SEQUENTIAL|_O_CREAT|_O_TRUNC, _S_IREAD|_S_IWRITE);
+	if(dst && _tcscmp(_T("-"), dst)==0){
+#if defined(_WIN32)
+		dfd = _fileno(stdout);
+		setmode(dfd, _O_BINARY);
+#else
+		dfd = STDOUT_FILENO;
+#endif
+	}else{
+		dfd = _topen(dst, _O_BINARY | _O_WRONLY | _O_SEQUENTIAL | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE);
+	}
+
 	if(dfd < 0){
 		_ftprintf(stderr, _T("error - failed on _open(%s) [dst]\n"), dst);
 		goto LAST;
