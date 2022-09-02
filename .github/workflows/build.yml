@@ -1,0 +1,101 @@
+name: Build
+on: push
+
+jobs:
+  ubuntu:
+    name: Ubuntu
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+        include:
+          - cc: gcc
+            cxx: g++
+          - cc: clang
+            cxx: clang++
+    runs-on: ubuntu-latest
+    env:
+      CLICOLOR_FORCE: 1
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup
+        run: sudo apt-get install build-essential clang cmake cmake-data libpcsclite-dev
+      - name: configure
+        run: |
+          cmake --version
+          cmake -B build -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: ./build/b25 2>&1 | grep --color=always "ARIB STD-B25"
+
+  arm:
+    name: ARM
+    strategy:
+      matrix:
+        image:
+          - raspbian/stretch
+          - arm32v7/ubuntu
+          - arm64v8/ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
+
+      - name: setup
+        uses: docker/build-push-action@v3
+        with:
+          context: .github/workflows/
+          tags: ${{ matrix.image }}:build
+          build-args: IMAGE=${{ matrix.image }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }},mode=max
+          load: true
+
+      - name: configure
+        run: |
+          mkdir build
+          docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build bash -c 'cmake --version && cmake ..'
+      - name: build 
+        run: docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build cmake --build .
+      - name: test
+        run: docker run --rm -i -v $(pwd):/work -w /work/build -e CLICOLOR_FORCE=1 ${{ matrix.image }}:build bash -c './b25 2>&1 | grep --color=always "ARIB STD-B25"'
+
+  macosx:
+    name: macOS X
+    strategy:
+      matrix:
+        os: [macos-11, macos-12]
+    runs-on: ${{ matrix.os }}
+    env:
+      CLICOLOR_FORCE: 1
+    steps:
+      - uses: actions/checkout@v3
+      - name: configure
+        run: |
+          cmake --version
+          cmake -B build
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: ./build/b25 2>&1 | grep --color=always "ARIB STD-B25"
+
+  windows:
+    name: Windows
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - windows-2019
+    runs-on: ${{ matrix.os }}
+    steps: 
+      - uses: actions/checkout@v3
+      - name: configure
+        run: |
+          cmake --version
+          cmake -B build
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: build\Debug\b25.exe 2>&1 | findstr "ARIB STD-B25"
+

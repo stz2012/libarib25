@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
-Name: @CMAKE_LIBRARY_PREFIX@@ARIB25_LIB_NAME@
+Name: @ARIB25_LIB_NAME@
 Description: @ARIB25_DESCRIPTION@
 URL: @ARIB25_URL@
-Version: @ARIB25_VERSION_STRING@
+Version: @PROJECT_DESCRIPTION@
 Libs: -L${libdir} -l@ARIB25_LIB_NAME@
 Cflags: -I${includedir}

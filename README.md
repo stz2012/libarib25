@@ -1,6 +1,6 @@
 # libarib25 (STZ版)
 
-[![Build Status](https://travis-ci.org/stz2012/libarib25.svg?branch=master)](https://travis-ci.org/stz2012/libarib25)
+[![Build Status](https://github.com/stz2012/libarib25/actions/workflows/build.yml/badge.svg)](https://github.com/stz2012/libarib25/actions/workflows/build.yml)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/stz2012/libarib25?branch=master&svg=true)](https://ci.appveyor.com/project/stz2012/libarib25)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 

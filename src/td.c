@@ -76,7 +76,7 @@ int _tmain(int argc, TCHAR **argv)
 
 static void show_usage()
 {
-	_ftprintf(stderr, _T("b25 - ARIB STD-B25 test program version %s (%s)\n"), _T(ARIB25_VERSION_STRING), _T(BUILD_GIT_REVISION));
+	_ftprintf(stderr, _T("b25 - ARIB STD-B25 test program version %s (%s)\n"), _T(PROJECT_DESCRIPTION), _T(BUILD_GIT_REVISION));
 	_ftprintf(stderr, _T("  built with %s %s on %s\n"), _T(BUILD_CC_NAME), _T(BUILD_CC_VERSION), _T(BUILD_OS_NAME));
 	_ftprintf(stderr, _T("usage: b25 [options] src.m2t dst.m2t [more pair ..]\n"));
 	_ftprintf(stderr, _T("options:\n"));
@@ -148,7 +148,7 @@ static int parse_arg(OPTION *dst, int argc, TCHAR **argv)
 
 
 			default:
-				optopt && _ftprintf(stderr, _T("%s: unrecognized option: %c\n"), argv[0], optopt);
+				if (optopt) _ftprintf(stderr, _T("%s: unrecognized option: %c\n"), argv[0], optopt);
 				exit(EXIT_FAILURE);
 				break;
 		}
@@ -364,8 +364,8 @@ static void test_arib_std_b25(const TCHAR *src, const TCHAR *dst, OPTION *opt)
 			_ftprintf(stderr, _T("  undecrypted TS packet: %I64d\n"), pgrm.undecrypted_packet_count);
 			_ftprintf(stderr, _T("  total TS packet:       %I64d\n"), pgrm.total_packet_count);
 			#else
-			_ftprintf(stderr, _T("  undecrypted TS packet: %"PRId64"\n"), pgrm.undecrypted_packet_count);
-			_ftprintf(stderr, _T("  total TS packet:       %"PRId64"\n"), pgrm.total_packet_count);
+			_ftprintf(stderr, _T("  undecrypted TS packet: %" PRId64 "\n"), pgrm.undecrypted_packet_count);
+			_ftprintf(stderr, _T("  total TS packet:       %" PRId64 "\n"), pgrm.total_packet_count);
 			#endif
 		}
 	}
